@@ -1,23 +1,21 @@
 import { BehaviorSubject, Subject } from "rxjs";
 
-export const valueMap: Map<BluetoothServiceUUID, Subject<any>> = new Map();
+export const valueMapNotify: Map<BluetoothServiceUUID, Subject<any>> = new Map();
 export const valueMapRead: Map<BluetoothServiceUUID, {value: Subject<any>, refresh: Promise<DataView>}> = new Map();
+export let device: BluetoothDevice | undefined = undefined;
+export const status: Subject<string> = new Subject();
 
-document.getElementById("test")?.addEventListener("click", () => {
-    console.log(valueMap);
-    valueMap.get(0x2A63)?.subscribe(v => console.log("0x2A63 - "+ v));
-    valueMap.get(0x2AD3)?.subscribe(v => console.log("0x2AD3 - "+ v));
-    valueMap.get(0x2ADA)?.subscribe(v => console.log("0x2ADA - "+ v));
-    valueMap.get(0x2AD2)?.subscribe(v => console.log("0x2AD2 - "+ v));
-    console.log(valueMapRead);
-});
+export const disconnect = () => {
+  if(device){
+    const deviceName = device.name;
+    device.gatt?.disconnect();
+    status.next("Disconnected from: " + deviceName);
+  }
+}
 
-let powerMeasurementCharacteristic: BluetoothRemoteGATTCharacteristic | undefined;
-let powerControlCharacteristic: BluetoothRemoteGATTCharacteristic | undefined;
-
-document.getElementById("connect")?.addEventListener("click", async () => {
+export const connect = async () => {
   try {
-    const device = await navigator.bluetooth.requestDevice({
+    device = await navigator.bluetooth.requestDevice({
       filters: [
         {
           services: [
@@ -28,7 +26,7 @@ document.getElementById("connect")?.addEventListener("click", async () => {
       ],
     });
 
-    document.getElementById("status")!.textContent = `Status: Connecting to ${device.name}...`;
+    status.next(`Status: Connecting to ${device.name}...`);
 
     // Connect to the GATT server
     const server = await device.gatt!.connect();
@@ -38,12 +36,9 @@ document.getElementById("connect")?.addEventListener("click", async () => {
     const services = await server.getPrimaryServices();
     for (const service of services) {
       console.log(`Service: ${service.uuid}`);
-      console.log(`Service Detail: `, service);
       const characteristics = await service.getCharacteristics();
       for (const characteristic of characteristics) {
-        console.log(`Characteristic: ${characteristic.uuid}`);
-        console.log(`Characteristic Detail:`, characteristic);
-        console.log(`Notify Enabled?`, characteristic.properties.notify);
+        console.log(`   Characteristic: ${characteristic.uuid}`);
       }
     }
 
@@ -60,10 +55,10 @@ document.getElementById("connect")?.addEventListener("click", async () => {
             const value = (event.target as BluetoothRemoteGATTCharacteristic).value;
             if (!value) return;
             const data = transformer ? transformer(new DataView(value.buffer)) : new DataView(value.buffer);
-            if(valueMap.has(cid)){
-                valueMap.get(cid)?.next(data);
+            if(valueMapNotify.has(cid)){
+                valueMapNotify.get(cid)?.next(data);
             } else {
-                valueMap.set(cid, new BehaviorSubject(data));
+                valueMapNotify.set(cid, new BehaviorSubject(data));
             } 
         }
     }
@@ -107,16 +102,11 @@ document.getElementById("connect")?.addEventListener("click", async () => {
             refresh: refresh
         });
     });
-
-    // Get Cycling Power Control Point Characteristic (for resistance control)
-    powerControlCharacteristic = await cyclingPowerService.getCharacteristic(0x2A66); // cycling_power_control_point
-
-    document.getElementById("status")!.textContent = `Status: Connected to ${device.name}`;
+    status.next(`Status: Connected to ${device.name}`);
   } catch (error) {
-    console.error(error);
-    document.getElementById("status")!.textContent = `Error: ${(error as Error).message}`;
+    status.next(`Error: ${(error as Error).message}`);
   }
-});
+}
 
 // Function to handle received power measurement data
 function handlePowerMeasurement(event: Event) {
@@ -129,53 +119,56 @@ function handlePowerMeasurement(event: Event) {
   document.getElementById("output")!.textContent = `Power: ${power} Watts`;
 }
 
+// Get Cycling Power Control Point Characteristic (for resistance control)
+// let powerControlCharacteristic = await cyclingPowerService.getCharacteristic(0x2A66); // cycling_power_control_point
+
 // Listen for changes in the resistance input slider
-document.getElementById("resistance")?.addEventListener("input", async (event) => {
-  const targetPower = parseInt((event.target as HTMLInputElement).value); // Target power from slider
-  document.getElementById("resistanceLevel")!.textContent = targetPower.toString();
+// document.getElementById("resistance")?.addEventListener("input", async (event) => {
+//   const targetPower = parseInt((event.target as HTMLInputElement).value); // Target power from slider
+//   document.getElementById("resistanceLevel")!.textContent = targetPower.toString();
 
-  if (!powerControlCharacteristic) {
-    alert("Please connect to the trainer first.");
-    return;
-  }
+//   if (!powerControlCharacteristic) {
+//     alert("Please connect to the trainer first.");
+//     return;
+//   }
 
-  try {
-    console.log("Sending control request (OpCode 0x00)");
+//   try {
+//     console.log("Sending control request (OpCode 0x00)");
 
-    // 1. Send control request (OpCode 0x00)
-    const controlRequest = new Uint8Array([0x00]); // OpCode 0x00
-    await powerControlCharacteristic.writeValue(controlRequest);
+//     // 1. Send control request (OpCode 0x00)
+//     const controlRequest = new Uint8Array([0x00]); // OpCode 0x00
+//     await powerControlCharacteristic.writeValue(controlRequest);
 
-    console.log("Control request sent. Now setting target power...");
+//     console.log("Control request sent. Now setting target power...");
 
-    // 2. Build the command to set the target power (OpCode 0x05)
-    const targetPowerValue = new DataView(new ArrayBuffer(3));
-    targetPowerValue.setUint8(0, 0x05); // OpCode 0x05 for Set Target Power
-    targetPowerValue.setInt16(1, targetPower, true); // Target power as SINT16 (2 bytes)
+//     // 2. Build the command to set the target power (OpCode 0x05)
+//     const targetPowerValue = new DataView(new ArrayBuffer(3));
+//     targetPowerValue.setUint8(0, 0x05); // OpCode 0x05 for Set Target Power
+//     targetPowerValue.setInt16(1, targetPower, true); // Target power as SINT16 (2 bytes)
 
-    // 3. Send the command to set the target power
-    await powerControlCharacteristic.writeValue(targetPowerValue);
-    console.log(`Target Power set to ${targetPower}W`);
+//     // 3. Send the command to set the target power
+//     await powerControlCharacteristic.writeValue(targetPowerValue);
+//     console.log(`Target Power set to ${targetPower}W`);
 
-    // 4. Start notifications to check the response
-    await powerControlCharacteristic.startNotifications();
-    powerControlCharacteristic.addEventListener("characteristicvaluechanged", (event) => {
-      const response = new Uint8Array((event.target as BluetoothRemoteGATTCharacteristic).value!.buffer);
-      console.log("Response received:", response);
+//     // 4. Start notifications to check the response
+//     await powerControlCharacteristic.startNotifications();
+//     powerControlCharacteristic.addEventListener("characteristicvaluechanged", (event) => {
+//       const response = new Uint8Array((event.target as BluetoothRemoteGATTCharacteristic).value!.buffer);
+//       console.log("Response received:", response);
 
-      if (response[0] === 0x80) {
-        // Check if it's a response (OpCode 0x80)
-        const requestOpCode = response[1]; // The OpCode of the original request (e.g., 0x05 for Target Power)
-        const resultCode = response[2]; // The result code (0x01 for success, others for error)
+//       if (response[0] === 0x80) {
+//         // Check if it's a response (OpCode 0x80)
+//         const requestOpCode = response[1]; // The OpCode of the original request (e.g., 0x05 for Target Power)
+//         const resultCode = response[2]; // The result code (0x01 for success, others for error)
 
-        if (requestOpCode === 0x05 && resultCode === 0x01) {
-          console.log("Target power successfully set!");
-        } else {
-          console.log(`Failed to set target power. Error code: ${resultCode}`);
-        }
-      }
-    });
-  } catch (error) {
-    console.error(`Failed to set target power: ${(error as Error).message}`);
-  }
-});
+//         if (requestOpCode === 0x05 && resultCode === 0x01) {
+//           console.log("Target power successfully set!");
+//         } else {
+//           console.log(`Failed to set target power. Error code: ${resultCode}`);
+//         }
+//       }
+//     });
+//   } catch (error) {
+//     console.error(`Failed to set target power: ${(error as Error).message}`);
+//   }
+// });
