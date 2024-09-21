@@ -1,15 +1,29 @@
 import { BehaviorSubject, Subject } from "rxjs";
 
-export const valueMapNotify: Map<BluetoothServiceUUID, Subject<any>> = new Map();
-export const valueMapRead: Map<BluetoothServiceUUID, {value: Subject<any>, refresh: Promise<DataView>}> = new Map();
-export let device: BluetoothDevice | undefined = undefined;
 export const status: Subject<string> = new Subject();
+export const connected: BehaviorSubject<boolean> = new BehaviorSubject(false);
+
+// Notify
+export const notify_0x2A63: Subject<DataView> = new Subject();
+export const notify_0x2AD3: Subject<DataView> = new Subject();
+export const notify_0x2ADA: Subject<DataView> = new Subject();
+export const notify_0x2AD2: Subject<DataView> = new Subject();
+
+// Read
+export let read_0x2A65: {value: Subject<DataView>, refresh: () => Promise<DataView>};
+export let read_0x2A5D: {value: Subject<DataView>, refresh: () => Promise<DataView>};
+export let read_0x2ACC: {value: Subject<DataView>, refresh: () => Promise<DataView>};
+export let read_0x2AD6: {value: Subject<DataView>, refresh: () => Promise<DataView>};
+export let read_0x2AD8: {value: Subject<DataView>, refresh: () => Promise<DataView>};
+
+export let device: BluetoothDevice | undefined = undefined;
 
 export const disconnect = () => {
   if(device){
     const deviceName = device.name;
     device.gatt?.disconnect();
     status.next("Disconnected from: " + deviceName);
+    connected.next(false);
   }
 }
 
@@ -46,78 +60,64 @@ export const connect = async () => {
     const cyclingPowerService = await server.getPrimaryService(0x1818);
     const fitnessMachineService = await server.getPrimaryService(0x1826);
 
-    // Notify Characteristic
-    const cpsNotifyCharacteristics = [0x2A63];
-    const fmsNotifyCharacteristics = [0x2AD3, 0x2ADA, 0x2AD2];
-
-    const evListener = (cid: number, transformer?: (dv: DataView) => DataView) => {
+    const evListener = (subject: Subject<any>) => {
         return (event: Event) => {
             const value = (event.target as BluetoothRemoteGATTCharacteristic).value;
             if (!value) return;
-            const data = transformer ? transformer(new DataView(value.buffer)) : new DataView(value.buffer);
-            if(valueMapNotify.has(cid)){
-                valueMapNotify.get(cid)?.next(data);
-            } else {
-                valueMapNotify.set(cid, new BehaviorSubject(data));
-            } 
+            const data = new DataView(value.buffer);
+            subject.next(data);
         }
     }
 
-    cpsNotifyCharacteristics.forEach(async (cid: number) => {
-        const c = await cyclingPowerService.getCharacteristic(cid);
-        await c.startNotifications();
-        c.addEventListener("characteristicvaluechanged", evListener(cid));
-    });
+    const c_0x2A63 = await cyclingPowerService.getCharacteristic(0x2A63);   // Cycling Power Measurement
+    const c_0x2AD3 = await fitnessMachineService.getCharacteristic(0x2AD3); // Training Status
+    const c_0x2ADA = await fitnessMachineService.getCharacteristic(0x2ADA); // Fitness Machine Status
+    const c_0x2AD2 = await fitnessMachineService.getCharacteristic(0x2AD2); // Indoor Bike Data
 
-    fmsNotifyCharacteristics.forEach(async (cid: number) => {
-        const c = await fitnessMachineService.getCharacteristic(cid);
-        await c.startNotifications();
-        c.addEventListener("characteristicvaluechanged", evListener(cid));
-    });
+    await c_0x2A63.startNotifications();
+    await c_0x2AD3.startNotifications();
+    await c_0x2ADA.startNotifications();
+    await c_0x2AD2.startNotifications();
 
-    // Initial Read Characteristics
-    const cpsReadCharacteristics = [0x2A65, 0x2A5D];
-    const fmsReadCharacteristics = [0x2ACC, 0x2AD6, 0x2AD8];
+    c_0x2A63.addEventListener("characteristicvaluechanged", evListener(notify_0x2A63));
+    c_0x2AD3.addEventListener("characteristicvaluechanged", evListener(notify_0x2AD3));
+    c_0x2ADA.addEventListener("characteristicvaluechanged", evListener(notify_0x2ADA));
+    c_0x2AD2.addEventListener("characteristicvaluechanged", evListener(notify_0x2AD2));
 
-    cpsReadCharacteristics.forEach(async (cid: number) => {
-        const refresh = new Promise<DataView>(async (resolve, _) => {
-            const c = await cyclingPowerService.getCharacteristic(cid);
-            const v: DataView = await c.readValue();
-            resolve(v);
-        });
-        valueMapRead.set(cid, {
-            value: new BehaviorSubject(await Promise.resolve(refresh)),
-            refresh: refresh
-        });
-    });
+    const addRead = (c: BluetoothRemoteGATTCharacteristic): {value: Subject<DataView>, refresh: () => Promise<DataView>} => {
+      const refresh = async (): Promise<DataView> => {
+        const v: DataView = await c.readValue();
+        return v;
+      }
+      return {
+        value: new Subject(),
+        refresh: refresh 
+      }
+    }
 
-    fmsReadCharacteristics.forEach(async (cid: number) => {
-        const refresh = new Promise<DataView>(async (resolve, _) => {
-            const c = await fitnessMachineService.getCharacteristic(cid);
-            const v: DataView = await c.readValue();
-            resolve(v);
-        });
-        valueMapRead.set(cid, {
-            value: new BehaviorSubject(await Promise.resolve(refresh)),
-            refresh: refresh
-        });
-    });
+    const c_0x2A65 = await cyclingPowerService.getCharacteristic(0x2A65);   // Cycling Power Feature
+    const c_0x2A5D = await cyclingPowerService.getCharacteristic(0x2A5D);   // Sensor Location (Other)
+    const c_0x2ACC = await fitnessMachineService.getCharacteristic(0x2ACC); // Fitness Machine Feature
+    const c_0x2AD6 = await fitnessMachineService.getCharacteristic(0x2AD6); // Supported Resistance Level Range
+    const c_0x2AD8 = await fitnessMachineService.getCharacteristic(0x2AD8); // Supported Power Range
+
+    read_0x2A65 = addRead(c_0x2A65);
+    read_0x2A5D = addRead(c_0x2A5D);
+    read_0x2ACC = addRead(c_0x2ACC);
+    read_0x2AD6 = addRead(c_0x2AD6);
+    read_0x2AD8 = addRead(c_0x2AD8);
+
     status.next(`Status: Connected to ${device.name}`);
+    connected.next(true);
   } catch (error) {
     status.next(`Error: ${(error as Error).message}`);
   }
 }
 
-// Function to handle received power measurement data
-function handlePowerMeasurement(event: Event) {
-  const value = (event.target as BluetoothRemoteGATTCharacteristic).value;
-  if (!value) return;
-  const data = new DataView(value.buffer);
-  console.log("DATA: ", data);
-  const power = data.getUint16(2, true); // Read power from the characteristic value
 
-  document.getElementById("output")!.textContent = `Power: ${power} Watts`;
-}
+//   const data = new DataView(value.buffer);
+//   const power = data.getUint16(2, true); // Read power from the characteristic value
+
 
 // Get Cycling Power Control Point Characteristic (for resistance control)
 // let powerControlCharacteristic = await cyclingPowerService.getCharacteristic(0x2A66); // cycling_power_control_point

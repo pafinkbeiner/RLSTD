@@ -7,23 +7,7 @@
     <title>RLSTD</title>
   </head>
   <body>
-    <div id="app">
-      <h1>Wahoo Kickr Core Bluetooth Connection</h1>
-      <button id="connect">Connect to Wahoo Kickr Core</button>
-      <button id="disconnect">Disconnect Bluetooth Device</button>
-      <p id="status">Status: Not connected</p>
-  
-      <h2>Power Output</h2>
-      <p id="output">Power: N/A</p>
-
-      <div></div>
-  
-      <!-- <h2>Resistance Control</h2>
-      <input type="range" id="resistance" min="0" max="100" value="50" />
-      <label for="resistance">Resistance Level: <span id="resistanceLevel">50</span>%</label> -->
-      <button id="test">TEST</button>
-    </div>
-    <script type="module" src="/src/main.ts"></script>
-    <script type="module" src="/src/bluetooth.ts"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
