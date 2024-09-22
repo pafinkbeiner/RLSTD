@@ -79,24 +79,45 @@ export function convert_0x2A5D(data: DataView): I0x2A5D {
     }
 }
 
-//////// Fitness Machine Feature //////// TODO - Not the right flags here!!!
+//////// Fitness Machine Feature ////////
 export const flags_0x2ACC_FMFF = {
-    averageSpeedSupported:          0b0000_0000_0000_0001,
-    cadenceSupported:               0b0000_0000_0000_0010,
-    totalDistanceSupported:         0b0000_0000_0000_0100,
-    inclinationSupported:           0b0000_0000_0000_1000,
-    elevationGainSupported:         0b0000_0000_0001_0000,
-    stepCountSupported:             0b0000_0000_0010_0000,
-    strokeCountSupported:           0b0000_0000_0100_0000,
-    heartRateMeasurementSupported:  0b0000_0000_1000_0000,
-    resistanceLevelSupported:       0b0000_0001_0000_0000,
-    strideCountSupported:           0b0000_0010_0000_0000,
-    powerMeasurementSupported:      0b0000_0100_0000_0000,
-    timeElapsedSupported:           0b0000_1000_0000_0000,
-    timeRemainingSupported:         0b0001_0000_0000_0000,
+    averageSpeedSupported:              0b0000_0000_0000_0001,
+    cadenceSupported:                   0b0000_0000_0000_0010,
+    totalDistanceSupported:             0b0000_0000_0000_0100,
+    inclinationSupported:               0b0000_0000_0000_1000,
+    paceSupported:                      0b0000_0000_0001_0000,
+    stepCountSupported:                 0b0000_0000_0010_0000,
+    resistanceLevelSupported:           0b0000_0000_0100_0000,
+    strideCountSupported:               0b0000_0000_1000_0000,
+    expendedEnergySupported:            0b0000_0001_0000_0000,
+    heartRateMesaurementSupported:      0b0000_0010_0000_0000,
+    metabolicEquivalentSupported:       0b0000_0100_0000_0000,
+    elapsedTimeSupported:               0b0000_1000_0000_0000,
+    remainingTimeSupported:             0b0001_0000_0000_0000,
+    powerMeasurementSupported:          0b0010_0000_0000_0000,
+    forceOnBeltAndPowerOutputSupported: 0b0100_0000_0000_0000,
+    userDataRetentionSupported:         0b1000_0000_0000_0000,
 }
 
-export const flags_0x2ACC_TSFF = {}
+export const flags_0x2ACC_TSFF = {
+    speedTargetSettingSupported:                                0b0000_0000_0000_0000_0001,
+    inclinationTargetSettingSupported:                          0b0000_0000_0000_0000_0010,
+    resistanceTargetSettingSupported:                           0b0000_0000_0000_0000_0100,
+    powerTargetSettingSupported:                                0b0000_0000_0000_0000_1000,
+    heartRateTargetSettingSupported:                            0b0000_0000_0000_0001_0000,
+    targetedExpendedEnergyConfigurationSupported:               0b0000_0000_0000_0010_0000,
+    targetedStepNumberConfigurationSupported:                   0b0000_0000_0000_0100_0000,
+    targetedStrideNumberConfigurationSupported:                 0b0000_0000_0000_1000_0000,
+    targetedDistanceConfigurationSupported:                     0b0000_0000_0001_0000_0000,
+    targetedTrainingTimeConfigurationSupported:                 0b0000_0000_0010_0000_0000,
+    targetedTimeInTwoHeartRateZonesConfigurationSupported:      0b0000_0000_0100_0000_0000,
+    targetedTimeInThreeHeartRateZonesConfigurationSupported:    0b0000_0000_1000_0000_0000,
+    targetedTimeInFiveHeartRateZonesConfigurationSupported:     0b0000_0001_0000_0000_0000,
+    indoorBikeSimulationParametersSupported:                    0b0000_0010_0000_0000_0000,
+    wheelCircumferenceConfigurationSupported:                   0b0000_0100_0000_0000_0000,
+    spinDownControlSupported:                                   0b0000_1000_0000_0000_0000,
+    targetedCadenceConfigurationSupported:                      0b0001_0000_0000_0000_0000,
+}
 
 export function convert_0x2ACC(data: DataView): I0x2ACC {
     return {
