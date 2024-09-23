@@ -4,7 +4,8 @@ import { connect, disconnect, status, connected, notify_0x2A63, notify_0x2AD3, n
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import InformationCard from './components/InformationCard'
 import ConnectedState from './components/ConnectedState'
-import { convert_0x2A5D, convert_0x2A63, convert_0x2A65, convert_0x2ACC, flags_0x2A63, flags_0x2A65, flags_0x2ACC_FMFF, flags_0x2ACC_TSFF } from './lib/convert'
+import { convert_0x2A5D, convert_0x2A63, convert_0x2A65, convert_0x2ACC, convert_0x2AD2, convert_0x2AD6, convert_0x2AD8, flags_0x2A63, flags_0x2A65, flags_0x2ACC_FMFF, flags_0x2ACC_TSFF, flags_0x2AD2 } from './lib/convert'
+import { AreaChart } from './AreaChart'
 
 let subscibed = false;
 
@@ -41,9 +42,31 @@ function App() {
         setcpmValue3({...cpmValue3, value: value.cumulativeCrankRevolutions});
         setcpmValue4({...cpmValue4, value: value.lastCrankEventTime});
       });
-      // notify_0x2AD3.asObservable().subscribe(v => console.log(v));
-      // notify_0x2ADA.asObservable().subscribe(v => console.log(v));
-      // notify_0x2AD2.asObservable().subscribe(v => console.log(v));
+      notify_0x2AD3.asObservable().subscribe(v => {
+        console.log("TRAINING STATUS: ", v);
+      });
+      notify_0x2ADA.asObservable().subscribe(v => {
+        console.log("FITNESS MACHINE STATUS: ", v);
+      });
+      notify_0x2AD2.asObservable().subscribe(v => {
+        const value = convert_0x2AD2(v);
+        console.log("moreData", ( value.flags & flags_0x2AD2.moreData ) > 0);
+        console.log("averageSpeedPresent", ( value.flags & flags_0x2AD2.averageSpeedPresent ) > 0);
+        console.log("instantaneousCadence", ( value.flags & flags_0x2AD2.instantaneousCadence ) > 0);
+        console.log("averageCadencePresent", ( value.flags & flags_0x2AD2.averageCadencePresent ) > 0);
+        console.log("totalDistancePresent", ( value.flags & flags_0x2AD2.totalDistancePresent ) > 0);
+        console.log("resistanceLevelPresent", ( value.flags & flags_0x2AD2.resistanceLevelPresent ) > 0);
+        console.log("instantaneousPowerPresent", ( value.flags & flags_0x2AD2.instantaneousPowerPresent ) > 0);
+        console.log("averagePowerPresent", ( value.flags & flags_0x2AD2.averagePowerPresent ) > 0);
+        console.log("expendedEnergyPresent", ( value.flags & flags_0x2AD2.expendedEnergyPresent ) > 0);
+        console.log("heartRatePresent", ( value.flags & flags_0x2AD2.heartRatePresent ) > 0);
+        console.log("metabolicEquivalentPresent", ( value.flags & flags_0x2AD2.metabolicEquivalentPresent ) > 0);
+        console.log("elapsedTimePresent", ( value.flags & flags_0x2AD2.elapsedTimePresent ) > 0);
+        console.log("remainingTimePresent", ( value.flags & flags_0x2AD2.remainingTimePresent ) > 0);
+        console.log("value.instantaneousCadence", value.instantaneousCadence);  // WICHTIG
+        console.log("value.instantaneousPower", value.instantaneousPower);      // WICHTIG
+        console.log("value.instantaneousSpeed", value.instantaneousSpeed);      // WICHTIG
+      });
     }
     subscibed = true;
     read_0x2A65.refresh().then(v => {
@@ -113,8 +136,14 @@ function App() {
       console.log("spinDownControlSupported", ( flags_0x2ACC_TSFF.spinDownControlSupported & value.targetSettingFeatures ) > 0);
       console.log("targetedCadenceConfigurationSupported", ( flags_0x2ACC_TSFF.targetedCadenceConfigurationSupported & value.targetSettingFeatures ) > 0);
     });
-    // read_0x2AD6.refresh().then(v => console.log(v));
-    // read_0x2AD8.refresh().then(v => console.log(v));
+    read_0x2AD6.refresh().then(v => {
+      const value = convert_0x2AD6(v);
+      console.log("Supported Resistance Level Range" , value);
+    });
+    read_0x2AD8.refresh().then(v => {
+      const value = convert_0x2AD8(v);
+      console.log("Supported Power Range", value)
+    });
   }
 
   useEffect(() => {
@@ -124,8 +153,8 @@ function App() {
 
 
   return (
-    <div className='flex flex-col items-center'>
-      <h1 className="mb-5 mt-5 scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+    <div className='flex flex-col items-center p-8'>
+      <h1 className="mb-5 scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
         Wahoo Kickr Core Bluetooth Connection
       </h1>
       <ConnectedState isConnected={isConnected}/>
@@ -133,6 +162,9 @@ function App() {
         <Button onClick={connect}>Connect to Wahoo Kickr Core</Button>
         <Button onClick={disconnect}>Disconnect Bluetooth Device</Button>
       </div>
+
+      <AreaChart title="Speed" description="Thats the current Speed" data={notify_0x2AD2} getter={(v) => convert_0x2AD2(v).instantaneousSpeed} />
+
       <div className='mb-5' style={{display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: "1rem"}}>
       <h2 className='scroll-m-20 font-extrabold tracking-tight lg:text-3xl'>Cycling Power Measurement</h2>
         <div style={{display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "1rem"}}>
@@ -142,6 +174,7 @@ function App() {
           <InformationCard key={cpmValue3.title} title={cpmValue3.title} value={cpmValue3.value} desc={cpmValue3.desc}/>
           <InformationCard key={cpmValue4.title} title={cpmValue4.title} value={cpmValue4.value} desc={cpmValue4.desc}/>
         </div>
+        <h2 className='scroll-m-20 font-extrabold tracking-tight lg:text-3xl'>Fitness Machine Feature</h2>
         <div style={{display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "1rem"}}>
           <InformationCard key={cpmValue5.title} title={cpmValue5.title} value={cpmValue5.value} desc={cpmValue5.desc}/>
           <InformationCard key={cpmValue6.title} title={cpmValue6.title} value={cpmValue6.value} desc={cpmValue6.desc}/>

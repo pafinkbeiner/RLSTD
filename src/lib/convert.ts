@@ -2,6 +2,9 @@ import { I0x2A5D } from "@/types/I0x2A5D";
 import { I0x2A63 } from "@/types/I0x2A63";
 import { I0x2A65 } from "@/types/I0x2A65";
 import { I0x2ACC } from "@/types/I0x2ACC";
+import { I0x2AD2 } from "@/types/I0x2AD2";
+import { I0x2AD6 } from "@/types/I0x2AD6";
+import { I0x2AD8 } from "@/types/I0x2AD8";
 
 /**
  * Check Flags f.e.: value.flags & flags_0x2A63.pedalPowerBalancePresent) > 0
@@ -123,5 +126,50 @@ export function convert_0x2ACC(data: DataView): I0x2ACC {
     return {
         fitnessMachineFeatures: data.getInt32(0, false),
         targetSettingFeatures: data.getInt32(4, false)
+    }
+}
+
+//////// Supported Resistance Level Range ////////
+export function convert_0x2AD6(data: DataView): I0x2AD6 {
+    return {
+        minimumResistanceLevel: data.getUint16(0, true) / 10,
+        maximumResistanceLevel: data.getUint16(2, true) / 10,
+        minimumIncrement: data.getUint16(4, true) / 10
+    }
+}
+
+//////// Supported Power Range ////////
+export function convert_0x2AD8(data: DataView): I0x2AD8 {
+    return {
+        minimumPower: data.getUint16(0, true),
+        maximumPower: data.getUint16(2, true),
+        minimumIncrement: data.getUint16(4, true)
+    }
+}
+
+//////// Indoor Bike Data ////////
+export const flags_0x2AD2 = {
+    moreData:                   0b0000_0000_0000_0001,
+    averageSpeedPresent:        0b0000_0000_0000_0010,
+    instantaneousCadence:       0b0000_0000_0000_0100,
+    averageCadencePresent:      0b0000_0000_0000_1000,
+    totalDistancePresent:       0b0000_0000_0001_0000,
+    resistanceLevelPresent:     0b0000_0000_0010_0000,
+    instantaneousPowerPresent:  0b0000_0000_0100_0000,
+    averagePowerPresent:        0b0000_0000_1000_0000,
+    expendedEnergyPresent:      0b0000_0001_0000_0000,
+    heartRatePresent:           0b0000_0010_0000_0000,
+    metabolicEquivalentPresent: 0b0000_0100_0000_0000,
+    elapsedTimePresent:         0b0000_1000_0000_0000,
+    remainingTimePresent:       0b0001_0000_0000_0000,
+}
+
+
+export function convert_0x2AD2(data: DataView): I0x2AD2 {
+    return {
+        flags: data.getUint16(0, true),
+        instantaneousSpeed: data.getUint16(2, true) / 10,
+        instantaneousCadence: data.getUint16(4, true),
+        instantaneousPower: data.getUint16(6, true)
     }
 }
