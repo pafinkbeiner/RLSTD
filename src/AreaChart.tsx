@@ -34,21 +34,41 @@ interface IProps {
   description: string;
   data: Subject<any>;
   getter: (v: any) => number;
+  size: number;
 }
 
-export function AreaChart({ title, description, data, getter }: IProps) {
+export function AreaChart({ title, description, data, getter, size}: IProps) {
 
-  const [chartData, setChartData] = useState<Array<{month: number, desktop: number}>>([]);
+  const [chartData, setChartData] = useState<any>([])
 
   useEffect(() => {
     const subscription = data.asObservable().subscribe((v) => {
-      setChartData((prevChartData) => [
-        ...prevChartData,
-        {
-          month: Date.now(),
-          desktop: getter(v),
+      let t: number = getter(v);
+      // Just to debug
+      // t += Math.random() * 10;
+      setChartData((prevChartData: any) => {
+
+        if(prevChartData.length >= size){
+          const temp = prevChartData.slice();
+          temp.shift();
+          return [
+            ...(temp),
+            {
+              month: Date.now(),
+              desktop: t,
+            }
+          ]
+        } else {
+          return [
+            ...prevChartData,
+            {
+              month: Date.now(),
+              desktop: t,
+            }
+          ]
         }
-      ]);
+
+      });
     });
   
     return () => {
@@ -63,18 +83,19 @@ export function AreaChart({ title, description, data, getter }: IProps) {
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[300px]">
+        <ChartContainer config={chartConfig} style={{height: "15rem", width: "100%"}}>
           <BarChart data={chartData}>
-            <CartesianGrid vertical={false} />
+            <CartesianGrid vertical={false}/>
             <XAxis dataKey="month"
               tickLine={false}
               tickMargin={10}
-              axisLine={false} />
+              axisLine={false} 
+              tickFormatter={(value) => new Date(value).getSeconds().toString()}/>
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="desktop" fill="var(--color-desktop)" radius={8} />
+            <Bar dataKey="desktop" fill="var(--color-desktop)" radius={8} isAnimationActive={false} />
           </BarChart>
         </ChartContainer>
       </CardContent>

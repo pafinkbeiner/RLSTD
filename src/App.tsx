@@ -163,7 +163,7 @@ function App() {
         <Button onClick={disconnect}>Disconnect Bluetooth Device</Button>
       </div>
 
-      <AreaChart title="Speed" description="Thats the current Speed" data={notify_0x2AD2} getter={(v) => convert_0x2AD2(v).instantaneousSpeed} />
+      <AreaChart size={100} title="Speed" description="Thats the current Speed" data={notify_0x2AD2} getter={(v) => convert_0x2AD2(v).instantaneousSpeed} />
 
       <div className='mb-5' style={{display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: "1rem"}}>
       <h2 className='scroll-m-20 font-extrabold tracking-tight lg:text-3xl'>Cycling Power Measurement</h2>
