@@ -74,7 +74,7 @@ export function SpeedChart({ title, description, data, getter, size}: IProps) {
   }, []);
 
   return (
-    <Card className="flex-1">
+    <Card className="flex-1 min-w-64">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>

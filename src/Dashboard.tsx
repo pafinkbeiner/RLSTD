@@ -48,7 +48,7 @@ function Dashboard() {
       </Alert>
 
       <div className='flex flex-row items-center justify-center gap-5 w-full flex-wrap'>
-        <InformationCard title="Torque" value={accumulatedTorque} desc="Accumulated Torque" />
+        <InformationCard title="Torque" value={accumulatedTorque} desc="Accumulated Torque" unit={"Nm"} />
         <InformationCard title="Torque" value={accumulatedTorque} desc="Accumulated Torque" />
         <InformationCard title="Torque" value={accumulatedTorque} desc="Accumulated Torque" />
         <InformationCard title="Torque" value={accumulatedTorque} desc="Accumulated Torque" />
