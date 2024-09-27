@@ -37,7 +37,7 @@ interface IProps {
   size: number;
 }
 
-export function AreaChart({ title, description, data, getter, size}: IProps) {
+export function SpeedChart({ title, description, data, getter, size}: IProps) {
 
   const [chartData, setChartData] = useState<any>([])
 
