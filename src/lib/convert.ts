@@ -124,8 +124,8 @@ export const flags_0x2ACC_TSFF = {
 
 export function convert_0x2ACC(data: DataView): I0x2ACC {
     return {
-        fitnessMachineFeatures: data.getInt32(0, false),
-        targetSettingFeatures: data.getInt32(4, false)
+        fitnessMachineFeatures: data.getInt32(0, true),
+        targetSettingFeatures: data.getInt32(4, true)
     }
 }
 
