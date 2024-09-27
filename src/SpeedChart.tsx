@@ -80,7 +80,7 @@ export function SpeedChart({ title, description, data, getter, size}: IProps) {
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} style={{height: "15rem"}}>
+        <ChartContainer config={chartConfig} style={{height: "15rem", width: "100%"}}>
           <BarChart data={chartData}>
             <CartesianGrid vertical={false}/>
             <XAxis dataKey="month"
