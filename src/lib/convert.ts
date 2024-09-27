@@ -148,7 +148,7 @@ export function convert_0x2AD8(data: DataView): I0x2AD8 {
 }
 
 //////// Indoor Bike Data ////////
-export const flags_0x2AD2 = {
+export const flags_0x2AD2: any = {
     moreData:                   0b0000_0000_0000_0001,
     averageSpeedPresent:        0b0000_0000_0000_0010,
     instantaneousCadence:       0b0000_0000_0000_0100,

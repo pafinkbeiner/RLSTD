@@ -1,19 +1,21 @@
-const Item = ({title}: {title: string}) => {
+import { Link } from "react-router-dom"
+
+const Item = ({ title, link }: { title: string, link: string }) => {
   return (
-    <div className="flex items-center justify-center w-full h-full transition transform hover:bg-muted cursor-pointer">
-      <h1 className="text-4xl font-extrabold">
+    <Link to={`${link}`} className="flex items-center justify-center w-full h-full transition transform hover:bg-muted cursor-pointer">
+      <h1 className="text-3xl font-extrabold">
         {title}
       </h1>
-    </div>
+    </Link>
   )
 }
 
-const NavigationPanel = ({className}: {className?: string}) => {
+const NavigationPanel = ({ className }: { className?: string }) => {
   return (
     <div className={className ? className + " " + "w-full flex justify-around h-32" : "w-full flex justify-around h-24"}>
-      <Item title="Dashboard" />
-      <Item title="Training" />
-      <Item title="Settings" />
+      <Item link="/" title="Dashboard" />
+      <Item link="/Training" title="Training" />
+      <Item link="/Settings" title="Settings" />
     </div>
   )
 }
