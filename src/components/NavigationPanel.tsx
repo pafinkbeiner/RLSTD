@@ -10,7 +10,7 @@ const Item = ({title}: {title: string}) => {
 
 const NavigationPanel = ({className}: {className?: string}) => {
   return (
-    <div className={className ? className + " " + "w-full flex justify-around h-32" : "w-full flex justify-around h-32"}>
+    <div className={className ? className + " " + "w-full flex justify-around h-32" : "w-full flex justify-around h-24"}>
       <Item title="Dashboard" />
       <Item title="Training" />
       <Item title="Settings" />
