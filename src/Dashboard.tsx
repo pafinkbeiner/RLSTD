@@ -2,15 +2,9 @@ import { useEffect, useState } from 'react'
 import { Button } from './components/ui/button'
 import { connect, disconnect, status, connected, notify_0x2AD2, notify_0x2A63 } from './lib/bluetooth'
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import ConnectedState from './components/ConnectedState'
 import { convert_0x2A63, convert_0x2AD2 } from './lib/convert'
 import { SpeedChart } from './SpeedChart'
-import { ModeToggle } from './components/mode-toggle'
-import BaseLayout from './BaseLayout'
-import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from './components/ui/navigation-menu'
-import NavigationPanel from './components/NavigationPanel'
 import InformationCard from './components/InformationCard'
-import { Card } from './components/ui/card'
 import FlagsBox from './components/FlagsBox'
 
 function Dashboard() {
