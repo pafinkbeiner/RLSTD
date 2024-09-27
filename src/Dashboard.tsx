@@ -35,10 +35,17 @@ function Dashboard() {
         RLSTD
       </h1>
 
-      <div className='mb-5 mt-5 flex gap-1 justify-center'>
+      <div className='mb-2 mt-2 flex gap-1 justify-center'>
         <Button onClick={connect}>Connect to Wahoo Kickr Core</Button>
         <Button onClick={disconnect}>Disconnect Bluetooth Device</Button>
       </div>
+
+      <Alert className='w-80 mb-2'>
+        <AlertTitle>Info</AlertTitle>
+        <AlertDescription>
+          {statusText}
+        </AlertDescription>
+      </Alert>
 
       <div className='flex flex-row items-center justify-center gap-5 w-full flex-wrap'>
         <InformationCard title="Torque" value={accumulatedTorque} desc="Accumulated Torque" />
@@ -51,13 +58,6 @@ function Dashboard() {
         <SpeedChart size={100} title="Speed" description="Thats the current Speed" data={notify_0x2AD2} getter={(v) => convert_0x2AD2(v).instantaneousSpeed} />
         <FlagsBox />
       </div>
-
-      <Alert className='w-80 absolute top-5 right-5'>
-        <AlertTitle>Info</AlertTitle>
-        <AlertDescription>
-          {statusText}
-        </AlertDescription>
-      </Alert>
 
       {/* <ConnectedState isConnected={isConnected} /> */}
 

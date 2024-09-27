@@ -12,7 +12,7 @@ const Item = ({ title, link }: { title: string, link: string }) => {
 
 const NavigationPanel = ({ className }: { className?: string }) => {
   return (
-    <div className={className ? className + " " + "w-full flex justify-around h-32" : "w-full flex justify-around h-24"}>
+    <div className={className ? className + " " + "w-full flex justify-around h-24" : "w-full flex justify-around h-24"}>
       <Item link="/" title="Dashboard" />
       <Item link="/Training" title="Training" />
       <Item link="/Settings" title="Settings" />

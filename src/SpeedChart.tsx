@@ -74,13 +74,13 @@ export function SpeedChart({ title, description, data, getter, size}: IProps) {
   }, []);
 
   return (
-    <Card className="flex-1 min-w-600">
+    <Card className="flex-1">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} style={{height: "15rem", width: "100%"}}>
+        <ChartContainer config={chartConfig} style={{height: "15rem"}}>
           <BarChart data={chartData}>
             <CartesianGrid vertical={false}/>
             <XAxis dataKey="month"

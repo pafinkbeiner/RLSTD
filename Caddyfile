@@ -1,0 +1,6 @@
+https:// {
+	tls internal {
+		on_demand
+	}
+	reverse_proxy localhost:5173
+}
