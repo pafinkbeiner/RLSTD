@@ -1,4 +1,5 @@
 import { BehaviorSubject, Subject } from "rxjs";
+import { codes_0x2AD9, opCodes_0x2AD9 } from "./convert";
 
 export const status: Subject<string> = new Subject();
 export const connected: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -15,6 +16,10 @@ export let read_0x2A5D: {value: Subject<DataView>, refresh: () => Promise<DataVi
 export let read_0x2ACC: {value: Subject<DataView>, refresh: () => Promise<DataView>};
 export let read_0x2AD6: {value: Subject<DataView>, refresh: () => Promise<DataView>};
 export let read_0x2AD8: {value: Subject<DataView>, refresh: () => Promise<DataView>};
+
+// Write
+export let write_0x2A66: (value: DataView) => Promise<void>;
+export let write_0x2AD9: (value: DataView) => Promise<void>;
 
 export let device: BluetoothDevice | undefined = undefined;
 
@@ -46,20 +51,11 @@ export const connect = async () => {
     const server = await device.gatt!.connect();
     console.log("GATT server connected");
 
-    // Debug: Print Available Services and Characteristics
-    const services = await server.getPrimaryServices();
-    for (const service of services) {
-      console.log(`Service: ${service.uuid}`);
-      const characteristics = await service.getCharacteristics();
-      for (const characteristic of characteristics) {
-        console.log(`   Characteristic: ${characteristic.uuid}`);
-      }
-    }
-
     // Services
     const cyclingPowerService = await server.getPrimaryService(0x1818);
     const fitnessMachineService = await server.getPrimaryService(0x1826);
 
+    // Notify
     const evListener = (subject: Subject<any>) => {
         return (event: Event) => {
             const value = (event.target as BluetoothRemoteGATTCharacteristic).value;
@@ -84,6 +80,7 @@ export const connect = async () => {
     c_0x2ADA.addEventListener("characteristicvaluechanged", evListener(notify_0x2ADA));
     c_0x2AD2.addEventListener("characteristicvaluechanged", evListener(notify_0x2AD2));
 
+    // Read
     const addRead = (c: BluetoothRemoteGATTCharacteristic): {value: Subject<DataView>, refresh: () => Promise<DataView>} => {
       const refresh = async (): Promise<DataView> => {
         const v: DataView = await c.readValue();
@@ -107,68 +104,22 @@ export const connect = async () => {
     read_0x2AD6 = addRead(c_0x2AD6);
     read_0x2AD8 = addRead(c_0x2AD8);
 
+    // Write
+    const c_0x2A66 = await cyclingPowerService.getCharacteristic(0x2A66);   // Cycling Power Control Point
+    const c_0x2AD9 = await fitnessMachineService.getCharacteristic(0x2AD9); // Fitness Machine Control Point
+
+    const addChangeHandler = (c: BluetoothRemoteGATTCharacteristic): (value: DataView) => Promise<void> => {
+      return (value: DataView) => {
+        return c.writeValue(value);
+      }
+    }
+
+    write_0x2A66 = addChangeHandler(c_0x2A66);
+    write_0x2AD9 = addChangeHandler(c_0x2AD9);
+
     status.next(`Status: Connected to ${device.name}`);
     connected.next(true);
   } catch (error) {
     status.next(`Error: ${(error as Error).message}`);
   }
 }
-
-
-//   const data = new DataView(value.buffer);
-//   const power = data.getUint16(2, true); // Read power from the characteristic value
-
-
-// Get Cycling Power Control Point Characteristic (for resistance control)
-// let powerControlCharacteristic = await cyclingPowerService.getCharacteristic(0x2A66); // cycling_power_control_point
-
-// Listen for changes in the resistance input slider
-// document.getElementById("resistance")?.addEventListener("input", async (event) => {
-//   const targetPower = parseInt((event.target as HTMLInputElement).value); // Target power from slider
-//   document.getElementById("resistanceLevel")!.textContent = targetPower.toString();
-
-//   if (!powerControlCharacteristic) {
-//     alert("Please connect to the trainer first.");
-//     return;
-//   }
-
-//   try {
-//     console.log("Sending control request (OpCode 0x00)");
-
-//     // 1. Send control request (OpCode 0x00)
-//     const controlRequest = new Uint8Array([0x00]); // OpCode 0x00
-//     await powerControlCharacteristic.writeValue(controlRequest);
-
-//     console.log("Control request sent. Now setting target power...");
-
-//     // 2. Build the command to set the target power (OpCode 0x05)
-//     const targetPowerValue = new DataView(new ArrayBuffer(3));
-//     targetPowerValue.setUint8(0, 0x05); // OpCode 0x05 for Set Target Power
-//     targetPowerValue.setInt16(1, targetPower, true); // Target power as SINT16 (2 bytes)
-
-//     // 3. Send the command to set the target power
-//     await powerControlCharacteristic.writeValue(targetPowerValue);
-//     console.log(`Target Power set to ${targetPower}W`);
-
-//     // 4. Start notifications to check the response
-//     await powerControlCharacteristic.startNotifications();
-//     powerControlCharacteristic.addEventListener("characteristicvaluechanged", (event) => {
-//       const response = new Uint8Array((event.target as BluetoothRemoteGATTCharacteristic).value!.buffer);
-//       console.log("Response received:", response);
-
-//       if (response[0] === 0x80) {
-//         // Check if it's a response (OpCode 0x80)
-//         const requestOpCode = response[1]; // The OpCode of the original request (e.g., 0x05 for Target Power)
-//         const resultCode = response[2]; // The result code (0x01 for success, others for error)
-
-//         if (requestOpCode === 0x05 && resultCode === 0x01) {
-//           console.log("Target power successfully set!");
-//         } else {
-//           console.log(`Failed to set target power. Error code: ${resultCode}`);
-//         }
-//       }
-//     });
-//   } catch (error) {
-//     console.error(`Failed to set target power: ${(error as Error).message}`);
-//   }
-// });

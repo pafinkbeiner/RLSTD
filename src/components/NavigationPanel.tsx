@@ -2,7 +2,7 @@ import { Link } from "react-router-dom"
 
 const Item = ({ title, link }: { title: string, link: string }) => {
   return (
-    <Link to={`${link}`} className="flex items-center justify-center w-full h-full transition transform hover:bg-muted cursor-pointer">
+    <Link to={`${link}`} className="flex items-center justify-center flex-1 h-full transition transform hover:bg-input cursor-pointer">
       <h1 className="text-3xl font-extrabold">
         {title}
       </h1>
@@ -12,11 +12,15 @@ const Item = ({ title, link }: { title: string, link: string }) => {
 
 const NavigationPanel = ({ className }: { className?: string }) => {
   return (
-    <div className={className ? className + " " + "w-full flex justify-around h-24" : "w-full flex justify-around h-24"}>
-      <Item link="/" title="Dashboard" />
-      <Item link="/Training" title="Training" />
-      <Item link="/Settings" title="Settings" />
-    </div>
+    <>
+      <div style={{borderTop: "1px solid white"}}></div>
+      <div className={className ? className + " " + "w-full flex justify-around h-24 flex-wrap" : "w-full flex justify-around h-24 flex-wrap"}>
+        <Item link="/" title="Dashboard" />
+        <Item link="/Training" title="Training" />
+        <Item link="/History"  title="History" />
+        <Item link="/Settings" title="Settings" />
+      </div>
+    </>
   )
 }
 

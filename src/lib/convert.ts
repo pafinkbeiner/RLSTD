@@ -173,3 +173,30 @@ export function convert_0x2AD2(data: DataView): I0x2AD2 {
         instantaneousPower: data.getUint16(6, true)
     }
 }
+
+// Fitness Machine Control Point
+export const opCodes_0x2AD9 = {
+    requestControl:                         0x00,
+    reset:                                  0x01,
+    setTargetSpeed:                         0x02,
+    setTargetInclination:                   0x03,
+    setTargetResistance:                    0x04,
+    setTargetPower:                         0x05,
+    setTargetHeartRate:                     0x06,
+    startOrResume:                          0x07,
+    stopOrPause:                            0x08,
+    setTargetedExpendedEnergy:              0x09,
+    setTargetedStepNumber:                  0x0A,
+    setTargetedStrideNumber:                0x0B,
+    setTargetedDistance:                    0x0C,
+    setTargetedTrainingTime:                0x0D,
+    setTargetedTimeInTwoHeartRateZones:     0x0E,
+    setTargetedTimeInThreeHeartRateZones:   0x0F,
+    setTargetedTimeInFiveHeartRateZones:    0x10,
+    setIndoorBikeSimulationParameters:      0x11,
+    setWheelCircumference:                  0x12,
+    setSpinDownControl:                     0x13,
+    setTargetedCadence:                     0x14,
+    responseCode:                           0x80,
+}
+export type codes_0x2AD9 = keyof typeof opCodes_0x2AD9;

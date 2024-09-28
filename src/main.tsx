@@ -7,6 +7,7 @@ import BaseLayout from './BaseLayout.tsx';
 import Training from './Training.tsx';
 import Dashboard from './Dashboard.tsx';
 import Settings from './Settings.tsx';
+import History from './History.tsx';
 
 const router = createBrowserRouter([
     {
@@ -22,6 +23,11 @@ const router = createBrowserRouter([
     {
         path: "/settings",
         element: <BaseLayout><Settings /></BaseLayout>,
+        errorElement: <ErrorPage />
+    },
+    {
+        path: "/history",
+        element: <BaseLayout><History /></BaseLayout>,
         errorElement: <ErrorPage />
     },
 ]);
