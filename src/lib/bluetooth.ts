@@ -17,8 +17,8 @@ export let read_0x2AD6: {value: Subject<DataView>, refresh: () => Promise<DataVi
 export let read_0x2AD8: {value: Subject<DataView>, refresh: () => Promise<DataView>};
 
 // Write
-export let write_0x2A66: (value: BufferSource) => Promise<void>;
-export let write_0x2AD9: (value: BufferSource) => Promise<void>;
+export let write_0x2A66: (value: BufferSource) => Promise<DataView | undefined>;
+export let write_0x2AD9: (value: BufferSource) => Promise<DataView | undefined>;
 
 export let device: BluetoothDevice | undefined = undefined;
 
@@ -108,9 +108,10 @@ export const connect = async () => {
     const c_0x2A66 = await cyclingPowerService.getCharacteristic(0x2A66);   // Cycling Power Control Point
     const c_0x2AD9 = await fitnessMachineService.getCharacteristic(0x2AD9); // Fitness Machine Control Point
 
-    const addChangeHandler = (c: BluetoothRemoteGATTCharacteristic): (value: BufferSource) => Promise<void> => {
-      return (value: BufferSource) => {
-        return c.writeValue(value);
+    const addChangeHandler = (c: BluetoothRemoteGATTCharacteristic): (value: BufferSource) => Promise<DataView | undefined> => {
+      return async (value: BufferSource) => {
+        await c.writeValue(value);
+        return c.value;
       }
     }
 
