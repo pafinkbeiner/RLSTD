@@ -59,6 +59,7 @@ function Dashboard() {
       <div className='mb-2 mt-2 flex gap-1 justify-center'>
         <Button onClick={connect}>Connect to Wahoo Kickr Core</Button>
         <Button onClick={disconnect}>Disconnect Bluetooth Device</Button>
+        <Button onClick={() => window.location.href = "about://bluetooth-internals"}>Bluetooth Test Interface</Button>
       </div>
 
       <Alert className='w-80 mb-2'>

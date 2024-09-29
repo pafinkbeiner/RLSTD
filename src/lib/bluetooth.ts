@@ -1,5 +1,4 @@
 import { BehaviorSubject, Subject } from "rxjs";
-import { codes_0x2AD9, opCodes_0x2AD9 } from "./convert";
 
 export const status: Subject<string> = new Subject();
 export const connected: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -18,8 +17,8 @@ export let read_0x2AD6: {value: Subject<DataView>, refresh: () => Promise<DataVi
 export let read_0x2AD8: {value: Subject<DataView>, refresh: () => Promise<DataView>};
 
 // Write
-export let write_0x2A66: (value: DataView) => Promise<void>;
-export let write_0x2AD9: (value: DataView) => Promise<void>;
+export let write_0x2A66: (value: BufferSource) => Promise<void>;
+export let write_0x2AD9: (value: BufferSource) => Promise<void>;
 
 export let device: BluetoothDevice | undefined = undefined;
 
@@ -29,6 +28,7 @@ export const disconnect = () => {
     device.gatt?.disconnect();
     status.next("Disconnected from: " + deviceName);
     connected.next(false);
+    device = undefined;
   }
 }
 
@@ -108,8 +108,8 @@ export const connect = async () => {
     const c_0x2A66 = await cyclingPowerService.getCharacteristic(0x2A66);   // Cycling Power Control Point
     const c_0x2AD9 = await fitnessMachineService.getCharacteristic(0x2AD9); // Fitness Machine Control Point
 
-    const addChangeHandler = (c: BluetoothRemoteGATTCharacteristic): (value: DataView) => Promise<void> => {
-      return (value: DataView) => {
+    const addChangeHandler = (c: BluetoothRemoteGATTCharacteristic): (value: BufferSource) => Promise<void> => {
+      return (value: BufferSource) => {
         return c.writeValue(value);
       }
     }

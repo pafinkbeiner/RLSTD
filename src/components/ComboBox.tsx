@@ -17,29 +17,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-const frameworks = [
-  {
-    value: "next.js",
-    label: "Next.js",
-  },
-  {
-    value: "sveltekit",
-    label: "SvelteKit",
-  },
-  {
-    value: "nuxt.js",
-    label: "Nuxt.js",
-  },
-  {
-    value: "remix",
-    label: "Remix",
-  },
-  {
-    value: "astro",
-    label: "Astro",
-  },
-]
-
 interface IProps {
   valueChanged: (v: string) => void;
   options: Array<{value: string, label: string}>;
@@ -63,7 +40,7 @@ export function ComboBox({options, valueChanged}: IProps) {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className="w-[200px] justify-between flex-1"
         >
           {value
             ? options.find((option) => option.value === value)?.label
