@@ -3,13 +3,15 @@ interface Props {
     value?: number;
     desc: string;
     unit?: string;
+    icon?: any;
 }
 
-const InformationCard = ({title, value, desc, unit}: Props) => {
+const InformationCard = ({title, value, desc, unit, icon}: Props) => {
     return (
         <div className="rounded-xl border bg-card text-card-foreground shadow min-w-64 flex-1">
             <div className="p-6 flex flex-row items-center justify-between space-y-0 pb-2">
                 <h3 className="tracking-tight text-sm font-medium">{title}</h3>
+                {icon}
             </div>
             <div className="p-6 pt-0">
                 <div className="flex flex-row items-end gap-1">

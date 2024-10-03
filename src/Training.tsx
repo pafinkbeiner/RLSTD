@@ -1,20 +1,12 @@
 import { useEffect, useState } from "react";
 import { Button } from "./components/ui/button"
 import { connect, connected, disconnect, notify_0x2AD2, write_0x2AD9 } from "./lib/bluetooth"
-import { convert_0x2AD2, opCodes_0x2AD9 } from "./lib/convert"
+import { convert_0x2AD2, numToUint8Array, opCodes_0x2AD9 } from "./lib/convert"
 import ConnectivityIndicator from "./components/ConnectivityIndicator";
 import InformationCard from "./components/InformationCard";
-
-function numToUint8Array(num: number): Uint8Array {
-  let arr = new Uint8Array(8);
-
-  for (let i = 0; i < 8; i++) {
-    arr[i] = num % 256;
-    num = Math.floor(num / 256);
-  }
-
-  return arr;
-}
+import { Gauge, RotateCwIcon, Zap } from "lucide-react";
+import { TrainingChart } from "./components/TrainingChart";
+import { exampleTraining } from "./types/Training";
 
 const Training = () => {
 
@@ -53,11 +45,19 @@ const Training = () => {
         <Button onClick={async () => console.log(await write_0x2AD9(new Uint8Array([opCodes_0x2AD9.setTargetPower, ...numToUint8Array(400)])))}>Set To 400 Watt</Button>
         <Button onClick={async () => console.log(await write_0x2AD9(new Uint8Array([opCodes_0x2AD9.stopOrPause])))}>Stop or Pause</Button>
         <Button onClick={async () => console.log(await write_0x2AD9(new Uint8Array([opCodes_0x2AD9.reset])))}>Reset</Button>
+        <Button onClick={async () => console.log(await write_0x2AD9(new Uint8Array([opCodes_0x2AD9.setSpinDownControl])))}>Spin Down Control</Button>
       </div>
       <div className='flex flex-row items-center justify-center gap-5 w-full flex-wrap'>
-        <InformationCard title="Instantaneous Power" value={instantaneousPower} desc="Instantaneous Power" unit={"W"} />
-        <InformationCard title="Instantaneous Cadence" value={instantaneousCadence} desc="Instantaneous Cadence" unit={"per min"} />
-        <InformationCard title="Instantaneous Speed" value={instantaneousSpeed} desc="Instantaneous Speed" unit={"km/h"} />
+        <InformationCard icon={<Zap height={20} width={20} />} title="Instantaneous Power" value={instantaneousPower} desc="Instantaneous Power" unit={"W"} />
+        <InformationCard icon={<RotateCwIcon height={20} width={20} />} title="Instantaneous Cadence" value={instantaneousCadence} desc="Instantaneous Cadence" unit={"per min"} />
+        <InformationCard icon={<Gauge height={20} width={20} />} title="Instantaneous Speed" value={instantaneousSpeed} desc="Instantaneous Speed" unit={"km/h"} />
+      </div>
+      <div className='flex flex-row items-center justify-center gap-5 w-full flex-wrap'>
+        <TrainingChart training={exampleTraining} />
+      </div>
+      <div className='flex flex-row items-center justify-center gap-5 w-full flex-wrap'>
+        <Button>Start Training</Button>
+        <Button disabled={true}>Pause Training</Button>
       </div>
     </>
   )
