@@ -46,17 +46,6 @@ export function TrainingChart({ training }: IProps) {
       }
     })
 
-    // Add last target power zone
-    if(training.targetPowerZones.length > 0){
-      const lastPowerZone = training.targetPowerZones[training.targetPowerZones.length - 1];
-      if(training.targetedTrainingTime > lastPowerZone.ts){
-        chartData.push({
-          ts: training.targetedTrainingTime,
-          targetPower: lastPowerZone.target,
-        })
-      }
-    }
-
     setChartData(chartData)
     return () => {
     };

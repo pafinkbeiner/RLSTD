@@ -56,8 +56,8 @@ const Training = () => {
         <TrainingChart training={exampleTraining} />
       </div>
       <div className='flex flex-row items-center justify-center gap-5 w-full flex-wrap'>
-        <Button>Start Training</Button>
-        <Button disabled={true}>Pause Training</Button>
+        <Button onClick={async () => exampleTraining.start()}>Start Training</Button>
+        <Button onClick={async () => exampleTraining.stop()}>Pause Training</Button>
       </div>
     </>
   )
