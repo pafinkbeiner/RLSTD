@@ -56,7 +56,7 @@ function Dashboard() {
         RLSTD
       </h1>
 
-      <div className='mb-2 mt-2 flex gap-1 justify-center'>
+      <div className='mb-2 mt-2 flex gap-2 justify-center flex-wrap'>
         <Button onClick={connect}>Connect to Wahoo Kickr Core</Button>
         <Button onClick={disconnect}>Disconnect Bluetooth Device</Button>
         <Button onClick={() => window.location.href = "about://bluetooth-internals"}>Bluetooth Test Interface</Button>
