@@ -13,7 +13,7 @@ const router = createBrowserRouter([
     {
         path: "/",
         element: <BaseLayout><Dashboard /></BaseLayout>,
-        errorElement: <ErrorPage />
+        errorElement: <ErrorPage />,
     },
     {
         path: "/training",
@@ -30,7 +30,7 @@ const router = createBrowserRouter([
         element: <BaseLayout><History /></BaseLayout>,
         errorElement: <ErrorPage />
     },
-]);
+], {basename: "/RLSTD"});
 
 createRoot(document.getElementById('root')!).render(
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
