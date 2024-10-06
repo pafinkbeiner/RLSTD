@@ -35,19 +35,48 @@ interface IProps {
 
 export function TrainingChart({ training }: IProps) {
 
-  const [chartData, setChartData] = useState<any>([])
+  const [chartData, setChartData] = useState<{ ts: number, targetPower: number }[]>([])
 
   useEffect(() => {
 
-    const chartData = training.targetPowerZones.map((v) => {
-      return {
-        ts: v.ts,
-        targetPower: v.target,
+    let tempChartData = [];
+    let lastTargetPower = training.targetPowerZones[0].target;
+    for (let i = 0; i < training.targetedTrainingTime; i++) {
+      const targetPowerZoneChange = training.targetPowerZones.find((v) => v.ts === i);
+      if (targetPowerZoneChange) {
+        lastTargetPower = targetPowerZoneChange.target;
       }
-    })
+      tempChartData.push({
+        ts: i,
+        targetPower: lastTargetPower,
+      });
+    }
+    setChartData(tempChartData);
 
-    setChartData(chartData)
+    const subscription = training.instanteneousPower.asObservable().subscribe((v) => {
+      setChartData((prevChartData: any) => {
+        const existingDataPointIndex = prevChartData.findIndex((dataPoint: any) => dataPoint.ts === v.ts);
+        if (existingDataPointIndex !== -1) {
+          const updatedChartData = [...prevChartData];
+          updatedChartData[existingDataPointIndex] = {
+            ...updatedChartData[existingDataPointIndex],
+            instantaneousPower: v.target,
+          };
+          return updatedChartData;
+        }
+
+        return [
+          ...prevChartData,
+          {
+            ts: v.ts,
+            instantaneousPower: v.target,
+          },
+        ].sort((a, b) => a.ts - b.ts);
+      });
+    });
+
     return () => {
+      subscription.unsubscribe();
     };
   }, []);
 
@@ -78,18 +107,19 @@ export function TrainingChart({ training }: IProps) {
               tickFormatter={(value) => value}
             />
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-            <Line
+            {/* <Line
               dataKey="targetPower"
               type="monotone"
               stroke="var(--color-instantaneousPower)"
               strokeWidth={2}
               dot={false}
-            />
+            /> */}
             <Area dataKey="targetPower"
               type="stepAfter"
               fill="var(--color-targetPower)"
               fillOpacity={0.4}
               stroke="var(--color-targetPower)"
+              isAnimationActive={false}
             />
             {/* <Bar dataKey="ts" fill="var(--color-targetPower)" radius={8} isAnimationActive={false} /> */}
             <Line
@@ -98,6 +128,7 @@ export function TrainingChart({ training }: IProps) {
               stroke="var(--color-instantaneousPower)"
               strokeWidth={2}
               dot={false}
+              isAnimationActive={false}
             />
           </ComposedChart>
 
