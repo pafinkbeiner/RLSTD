@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/chart"
 import { Subject } from "rxjs"
 import { useEffect, useState } from "react"
-import { Training } from "@/types/Training"
+import { Training, TrainingState } from "@/types/Training"
 
 const chartConfig = {
   targetPower: {
@@ -36,6 +36,7 @@ interface IProps {
 export function TrainingChart({ training }: IProps) {
 
   const [chartData, setChartData] = useState<{ ts: number, targetPower: number }[]>([])
+  const [trainingStatus, setTrainingStatus] = useState<TrainingState>(TrainingState.Stopped);
 
   useEffect(() => {
 
@@ -75,15 +76,20 @@ export function TrainingChart({ training }: IProps) {
       });
     });
 
+    const trainingStatusSubscription = training.trainingStatus.asObservable().subscribe((v) => {
+      setTrainingStatus(v);
+    });
+
     return () => {
       subscription.unsubscribe();
+      trainingStatusSubscription.unsubscribe();
     };
   }, []);
 
   return (
     <Card className="flex-1 min-w-64">
       <CardHeader>
-        <CardTitle>{training.title}</CardTitle>
+        <CardTitle>{training.title} {trainingStatus === TrainingState.Running && <span className="text-green-500">Running</span>}</CardTitle>
         {training.description && <CardDescription>{training.description}</CardDescription>}
       </CardHeader>
       <CardContent>

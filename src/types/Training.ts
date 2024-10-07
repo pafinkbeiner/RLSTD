@@ -2,7 +2,7 @@ import { notify_0x2AD2, write_0x2AD9 } from "@/lib/bluetooth";
 import { convert_0x2AD2, numToUint8Array, opCodes_0x2AD9 } from "@/lib/convert";
 import { BehaviorSubject, first, Subject, Subscription } from "rxjs";
 
-enum TrainingState {
+export enum TrainingState {
     Stopped,
     Running,
     Paused,
@@ -22,6 +22,7 @@ export interface Training {
     targetedTimeInFiveHeartRateZones?: number;
     targetPowerZones: Metric[];
     instanteneousPower: Subject<Metric>;
+    trainingStatus: Subject<TrainingState>;
     // Essentials
     start: () => void;
     stop: () => void;
@@ -38,10 +39,11 @@ export class TrainingInstanceWahoo implements Training {
     public targetedTimeInThreeHeartRateZones?: number = 0;
     public targetedTimeInFiveHeartRateZones?: number = 0;
     private _targetPowerZones: Metric[];
+    public trainingStatus: BehaviorSubject<TrainingState> = new BehaviorSubject<TrainingState>(TrainingState.Stopped);
     
     // Time related
     private _timer: NodeJS.Timeout | undefined = undefined;
-    private _refreshInterval: number = 1000;
+    private _refreshInterval: number = 250;
     private _startTimeStamp: number = 0;
     
     // Bike related
@@ -110,6 +112,7 @@ export class TrainingInstanceWahoo implements Training {
     }
 
     public async start() {
+        this.trainingStatus.next(TrainingState.Running);
         await this.requestPowerControl();
         if(this._startTimeStamp === 0){
             this._startTimeStamp = Date.now();
@@ -118,26 +121,36 @@ export class TrainingInstanceWahoo implements Training {
     }
 
     public stop() {
+        this.trainingStatus.next(TrainingState.Stopped);
         clearInterval(this._timer);
         this._timer = undefined;
         this._instanteneousPowerSubscription?.unsubscribe();
     }
 
     public continue() {
+        this.trainingStatus.next(TrainingState.Running);
         if(!this._timer) {
             this._timer = setInterval(async () => await this.tick(), this._refreshInterval);
         }
     }
+
     public pause() {
+        this.trainingStatus.next(TrainingState.Paused);
         if(this._timer){
             clearInterval(this._timer);
             this._timer = undefined;
         }
+        this._startTimeStamp = Date.now();
     }
 
     private async requestPowerControl() {
-        if(!this._powerControlRequested && false){
-            await write_0x2AD9(new Uint8Array([opCodes_0x2AD9.requestControl]))
+        if(!this._powerControlRequested){
+            try{
+                await write_0x2AD9(new Uint8Array([opCodes_0x2AD9.requestControl]))
+            }catch(e){
+                console.log("Error requesting power control: ", e);
+                console.log("Device probably not connected!");
+            }
         }
     }
 
@@ -153,7 +166,7 @@ export class TrainingInstanceWahoo implements Training {
 
 
 
-const exampleTrainingData: any = {
+export const exampleTrainingData: any = {
     title: "Example Training",
     description: "Example Training Description",
     targetedTrainingTime: 110,
