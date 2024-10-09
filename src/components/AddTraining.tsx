@@ -36,7 +36,7 @@ export function AddTraining(props: any) {
           </SheetDescription>
         </SheetHeader>
         <div className="flex flex-col gap-3 pt-5 pb-5">
-          <AddTrainingAreaChart changeDataSubject={changeDataSubject} />
+          <AddTrainingAreaChart changeDataSubject={changeDataSubject} setTargetPower={setTargetPower} setTimeStamp={setTimeStamp} />
 
           <div className="flex flex-col gap-2 w-64">
             <div className="flex flex-row gap-5 items-center">

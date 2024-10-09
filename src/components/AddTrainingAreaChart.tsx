@@ -34,9 +34,11 @@ export enum Operation {
 
 interface IProps {
   changeDataSubject: Subject<{ operation: Operation, data: Metric }>;
+  setTimeStamp: React.Dispatch<React.SetStateAction<number>>;
+  setTargetPower: React.Dispatch<React.SetStateAction<number>>;
 }
 
-function AddTrainingAreaChart({ changeDataSubject }: IProps) {
+function AddTrainingAreaChart({ changeDataSubject, setTimeStamp, setTargetPower }: IProps) {
 
   const [chartData, setChartData] = useState<Array<Metric>>([
     { ts: 1, target: 100 },
@@ -96,15 +98,17 @@ function AddTrainingAreaChart({ changeDataSubject }: IProps) {
           <AreaChart data={chartData}>
             <CartesianGrid vertical={false} />
             <XAxis dataKey="ts"
+              style={{cursor: "pointer", fontSize: "1.5em"}}
               tickLine={false}
               tickMargin={10}
               axisLine={false}
+              onClick={(e: any) => setTimeStamp(e.value)}
               tickFormatter={(value) => value} />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Area type="stepAfter" dataKey="target" fill="var(--color-target)" radius={8} isAnimationActive={false} />
+            <Area onClick={(e) => {console.log("2", e)}} type="stepAfter" dataKey="target" fill="var(--color-target)" radius={8} isAnimationActive={false} />
           </AreaChart>
         </ChartContainer>
       </CardContent>
