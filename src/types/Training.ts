@@ -8,7 +8,7 @@ export enum TrainingState {
     Paused,
 }
 
-interface Metric {
+export interface Metric {
     ts: number;
     target: number;
 }

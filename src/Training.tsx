@@ -8,6 +8,7 @@ import { Gauge, RotateCwIcon, Zap } from "lucide-react";
 import { TrainingChart } from "./components/TrainingChart";
 import { exampleTraining, exampleTrainingData, TrainingInstanceWahoo } from "./types/Training";
 import { AddTraining } from "./components/AddTraining";
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "./components/ui/sheet";
 
 const Training = () => {
 
