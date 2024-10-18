@@ -16,7 +16,7 @@ import { Subject } from "rxjs";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
-export function AddTraining(props: any) {
+export function AddTraining() {
 
   const [timeStamp, setTimeStamp] = useState<number>(0);
   const [targetPower, setTargetPower] = useState<number>(0);
