@@ -33,60 +33,12 @@ export enum Operation {
 }
 
 interface IProps {
-  changeDataSubject: Subject<{ operation: Operation, data: Metric }>;
+  chartData: Array<Metric>;
   setTimeStamp: React.Dispatch<React.SetStateAction<number>>;
   setTargetPower: React.Dispatch<React.SetStateAction<number>>;
 }
 
-function AddTrainingAreaChart({ changeDataSubject, setTimeStamp, setTargetPower }: IProps) {
-
-  const [chartData, setChartData] = useState<Array<Metric>>([
-    { ts: 1, target: 100 },
-    { ts: 2, target: 200 },
-    { ts: 3, target: 150 },
-    { ts: 4, target: 100 },
-  ])
-
-  const addChartData = (v: Metric) => {
-    setChartData((prevChartData: any) => {
-      const existingDataPointIndex = prevChartData.findIndex((dataPoint: any) => dataPoint.ts === v.ts);
-      if (existingDataPointIndex !== -1) {
-        const updatedChartData = [...prevChartData];
-        updatedChartData[existingDataPointIndex] = {
-          ...updatedChartData[existingDataPointIndex],
-          target: v.target,
-        };
-        return updatedChartData;
-      }
-      return [
-        ...prevChartData,
-        {
-          ts: v.ts,
-          target: v.target,
-        },
-      ].sort((a, b) => a.ts - b.ts);
-    });
-  }
-
-  const removeChartData = (data: Metric) => {
-    setChartData((prevChartData: any) => {
-      return prevChartData.filter((v: any) => v.ts !== data.ts);
-    });
-  }
-
-  useEffect(() => {
-    const subscription = changeDataSubject.subscribe((v) => {
-      if (v.operation === Operation.Add) {
-        addChartData(v.data);
-      } else if (v.operation === Operation.Remove) {
-        removeChartData(v.data);
-      }
-    });
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [])
-
+function AddTrainingAreaChart({ chartData, setTimeStamp, setTargetPower }: IProps) {
 
   return (
     <Card className="flex-1 min-w-64">
@@ -102,7 +54,13 @@ function AddTrainingAreaChart({ changeDataSubject, setTimeStamp, setTargetPower 
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              onClick={(e: any) => setTimeStamp(e.value)}
+              onClick={(e: any) => {
+                setTimeStamp(e.value);
+                const power = chartData.find(item => item.ts == e.value)?.target;
+                if(power){
+                  setTargetPower(power)
+                }
+              }}
               tickFormatter={(value) => value} />
             <ChartTooltip
               cursor={false}

@@ -21,13 +21,14 @@ export interface Training {
     targetedTimeInThreeHeartRateZones?: number;
     targetedTimeInFiveHeartRateZones?: number;
     targetPowerZones: Metric[];
-    instanteneousPower: Subject<Metric>;
-    trainingStatus: Subject<TrainingState>;
+    instanteneousPower?: Subject<Metric>;
+    trainingStatus?: Subject<TrainingState>;
+    cloudSynchronised?: boolean
     // Essentials
-    start: () => void;
-    stop: () => void;
-    continue: () => void;    
-    pause: () => void;
+    start?: () => void;
+    stop?: () => void;
+    continue?: () => void;    
+    pause?: () => void;
 }
 
 export class TrainingInstanceWahoo implements Training {

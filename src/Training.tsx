@@ -9,6 +9,7 @@ import { TrainingChart } from "./components/TrainingChart";
 import { exampleTraining, exampleTrainingData, TrainingInstanceWahoo } from "./types/Training";
 import { AddTraining } from "./components/AddTraining";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "./components/ui/sheet";
+import { SelectTraining } from "./components/SelectTraining";
 
 const Training = () => {
 
@@ -47,11 +48,13 @@ const Training = () => {
         <InformationCard icon={<RotateCwIcon height={20} width={20} />} title="Instantaneous Cadence" value={instantaneousCadence} desc="Instantaneous Cadence" unit={"per min"} />
         <InformationCard icon={<Gauge height={20} width={20} />} title="Instantaneous Speed" value={instantaneousSpeed} desc="Instantaneous Speed" unit={"km/h"} />
       </div>
-      <Button onClick={() => setTraining(new TrainingInstanceWahoo(exampleTrainingData.title, exampleTrainingData.targetedTrainingTime, exampleTrainingData.targetPowerZones))}>Load Training</Button>
+      <div className="flex flex-row gap-3">
+        <Button onClick={() => setTraining(new TrainingInstanceWahoo(exampleTrainingData.title, exampleTrainingData.targetedTrainingTime, exampleTrainingData.targetPowerZones))}>Load Example Training</Button>
+        <SelectTraining setTraining={setTraining}/>
+      </div>
       {training &&
         <>
           <div className='flex flex-row items-center justify-center gap-5 w-full flex-wrap'>
-
             <TrainingChart training={training} />
           </div>
           <div className='flex flex-row items-center justify-center gap-5 w-full flex-wrap'>

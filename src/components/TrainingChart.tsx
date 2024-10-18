@@ -54,7 +54,7 @@ export function TrainingChart({ training }: IProps) {
     }
     setChartData(tempChartData);
 
-    const subscription = training.instanteneousPower.asObservable().subscribe((v) => {
+    const subscription = training?.instanteneousPower?.asObservable().subscribe((v) => {
       setChartData((prevChartData: any) => {
         const existingDataPointIndex = prevChartData.findIndex((dataPoint: any) => dataPoint.ts === v.ts);
         if (existingDataPointIndex !== -1) {
@@ -76,15 +76,15 @@ export function TrainingChart({ training }: IProps) {
       });
     });
 
-    const trainingStatusSubscription = training.trainingStatus.asObservable().subscribe((v) => {
+    const trainingStatusSubscription = training.trainingStatus?.asObservable().subscribe((v) => {
       setTrainingStatus(v);
     });
 
     return () => {
-      subscription.unsubscribe();
-      trainingStatusSubscription.unsubscribe();
+      subscription?.unsubscribe();
+      trainingStatusSubscription?.unsubscribe();
     };
-  }, []);
+  }, [training]);
 
   return (
     <Card className="flex-1 min-w-64">
