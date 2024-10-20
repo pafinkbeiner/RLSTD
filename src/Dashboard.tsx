@@ -19,12 +19,12 @@ function Dashboard() {
   const [minimumPowerLevel, setMinimumPowerLevel] = useState<number | undefined>(0);
 
   const refresh = () => {
-    read_0x2AD6.refresh().then(v => {
+    read_0x2AD6?.refresh().then(v => {
       const value = convert_0x2AD6(v);
       setMaximumResistanceLevel(value.maximumResistanceLevel);
       setMinimumResistanceLevel(value.minimumResistanceLevel);
     });
-    read_0x2AD8.refresh().then(v => {
+    read_0x2AD8?.refresh().then(v => {
       const value = convert_0x2AD8(v);
       setMaximumPowerLevel(value.maximumPower);
       setMinimumPowerLevel(value.minimumPower);

@@ -32,7 +32,7 @@ export function SelectTraining(props: Props) {
         setTrainings((prevTrainings: any) => [...prevTrainings, training]);
       }
     }
-  }, [props])
+  }, [])
 
   const loadTraining = () => {
     if(selectedTraining !== undefined){
