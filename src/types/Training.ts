@@ -14,6 +14,7 @@ export interface Metric {
 }
 
 export interface Training {
+    id: string;
     title: string;
     description?: string;
     targetedTrainingTime: number;
@@ -33,6 +34,7 @@ export interface Training {
 
 export class TrainingInstanceWahoo implements Training {
 
+    public id: string;
     public title: string = "";
     public description?: string | undefined = "";
     public targetedTrainingTime: number = 0;
@@ -61,6 +63,7 @@ export class TrainingInstanceWahoo implements Training {
     private _currentInstantaneousSpeed: number = 0;
 
     constructor(title: string, targetedTrainingTime: number, targetPowerZones: Metric[] = []) {
+        this.id = crypto.randomUUID();
         this.title = title;
         this.targetedTrainingTime = targetedTrainingTime;
         this._targetPowerZones = targetPowerZones;

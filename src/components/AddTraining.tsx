@@ -58,14 +58,13 @@ export function AddTraining() {
 
   const saveTraining = () => {
     const training: Training = {
+      id: crypto.randomUUID(),
       title: trainingTitle,
       targetedTrainingTime: chartData[chartData.length - 1].ts,
       targetPowerZones: chartData,
       cloudSynchronised: false
     }
-    const uuid = crypto.randomUUID();
-    localStorage.setItem(`training-${uuid}`, JSON.stringify(training));
-
+    localStorage.setItem(`training-${training.id}`, JSON.stringify(training));
   }
 
   return (

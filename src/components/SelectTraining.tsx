@@ -12,7 +12,7 @@ import {
 import { useEffect, useState } from "react"
 import { Metric, Training, TrainingInstanceWahoo } from "@/types/Training";
 import InformationCard from "./InformationCard";
-import { Zap } from "lucide-react";
+import { Trash, Trash2, Zap } from "lucide-react";
 
 interface Props {
   setTraining: React.Dispatch<React.SetStateAction<TrainingInstanceWahoo | undefined>>
@@ -23,7 +23,7 @@ export function SelectTraining(props: Props) {
   const [trainings, setTrainings] = useState<Array<Training>>([]);
   const [selectedTraining, setSelectedTraining] = useState<Training | undefined>(undefined);
 
-  useEffect(() => {
+  const refreshState = () => {
     setTrainings([]);
     for (let i = 0; i < localStorage.length; i++) {
       const key: string | null = localStorage.key(i);
@@ -32,12 +32,25 @@ export function SelectTraining(props: Props) {
         setTrainings((prevTrainings: any) => [...prevTrainings, training]);
       }
     }
+  }
+
+  useEffect(() => {
+    refreshState();
   }, [])
 
   const loadTraining = () => {
     if(selectedTraining !== undefined){
       props.setTraining(new TrainingInstanceWahoo(selectedTraining.title, selectedTraining.targetedTrainingTime, selectedTraining.targetPowerZones));
     }
+  }
+
+  const deleteTraining = (id: string) => {
+    console.log(id)
+    if(localStorage.getItem(`training-${id}`) !== null){
+      console.log("Found: " +localStorage.getItem(`training-${id}`) )
+      localStorage.removeItem(`training-${id}`);
+    }
+    refreshState();
   }
 
   return (
@@ -52,14 +65,16 @@ export function SelectTraining(props: Props) {
             Make Changes to the Training by adding or removing data points.
           </SheetDescription>
         </SheetHeader>
+        <Button className="mt-3" variant={"outline"} onClick={() => refreshState()}>Refresh Trainings</Button>
         <div className='flex flex-row items-center justify-center gap-5 w-full flex-wrap p-5'>
-          {trainings.map((training: Training) => {
+          {trainings.length > 0 && trainings.map((training: Training) => {
             return (
-              <div onClick={() => setSelectedTraining(training)}>
-                <InformationCard icon={<Zap height={20} width={20} />} title={`${training.title} ${training.title === selectedTraining?.title ? " (selected)" : ""}`} value={training.targetPowerZones.length} desc={training.description ?? ""} unit={"target power zones"} />
+              <div key={training.id} onClick={() => setSelectedTraining(training)}>
+                <InformationCard icon={<Trash onClick={() => deleteTraining(training.id)} height={20} width={20} />} title={`${training.title} ${training.title === selectedTraining?.title ? " (selected)" : ""}`} value={training.targetPowerZones.length} desc={training.description ?? ""} unit={"target power zones"} />
               </div>
             );
           })}
+          {trainings.length <= 0 && <h3>No Trainings found</h3>}
         </div>
         <SheetFooter>
           <SheetClose asChild>
