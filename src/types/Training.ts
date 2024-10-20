@@ -32,6 +32,140 @@ export interface Training {
     pause?: () => void;
 }
 
+interface TrainingSnapshot {
+    currentTrainingTimestamp: number;
+    currentTrainingDifference: number;
+    targetPowerZone: Metric | undefined;
+}
+
+export abstract class TrainingInstance implements Training {
+    id: string;
+    title: string;
+    description?: string | undefined;
+    targetedTrainingTime: number;
+    targetedTimeInTwoHeartRateZones?: number | undefined;
+    targetedTimeInThreeHeartRateZones?: number | undefined;
+    targetedTimeInFiveHeartRateZones?: number | undefined;
+    _targetPowerZones: Metric[];
+    instanteneousPower?: Subject<Metric> | undefined;
+    trainingStatus?: Subject<TrainingState> | undefined;
+    cloudSynchronised?: boolean | undefined;
+
+    // Time related
+    private _timer: NodeJS.Timeout | undefined = undefined;
+    private _refreshInterval: number = 250;
+    private _startTimeStamp: number = 0;
+
+    private handler: Array<(trainingSnapshot: TrainingSnapshot) => void> = [];
+
+    constructor(title: string, targetedTrainingTime: number, targetPowerZones: Metric[] = []) {
+        this.id = crypto.randomUUID();
+        this.title = title;
+        this.targetedTrainingTime = targetedTrainingTime;
+        this._targetPowerZones = targetPowerZones;
+        this.instanteneousPower = new Subject();
+    }
+
+    public get targetPowerZones() {
+        if(this._targetPowerZones.length > 0){
+            const firstPowerZone = this._targetPowerZones[0];
+            const lastPowerZone = this._targetPowerZones[this._targetPowerZones.length - 1];
+            return [{
+                ts: 0,
+                target: firstPowerZone.target
+            }, 
+            ...this._targetPowerZones, {
+                ts: this.targetedTrainingTime,
+                target: lastPowerZone.target
+            }];
+        }else{
+            return this._targetPowerZones;
+        }
+    }
+
+    public set targetPowerZones(value: Metric[]) {
+        this._targetPowerZones = value;
+    }
+
+    public registerHandler(handler: (trainingSnapshot: TrainingSnapshot) => void){
+        this.handler.push(handler);
+    }
+
+    private tick(){
+        const currentTrainingTimestamp: number = Date.now() - this._startTimeStamp;
+        const currentTrainingDifference: number = Math.round(currentTrainingTimestamp / 1000);
+        const targetPowerZone = this.targetPowerZones.find((v) => v.ts === currentTrainingDifference);
+
+        const trainingSnapshot: TrainingSnapshot = {
+            currentTrainingTimestamp,
+            currentTrainingDifference,
+            targetPowerZone
+        }
+
+        this.handler.forEach((v) => v(trainingSnapshot));
+    }
+
+    public start(){
+        if(this._startTimeStamp === 0){
+            this._startTimeStamp = Date.now();
+            this._timer = setInterval(() => this.tick(), this._refreshInterval);
+        }
+    }
+
+    public stop(){
+        clearInterval(this._timer);
+        this._timer = undefined;
+    }
+
+    public continue(){
+        if(!this._timer) {
+            this._timer = setInterval(() => this.tick(), this._refreshInterval);
+        }
+    }
+
+    public pause(){
+        if(this._timer){
+            clearInterval(this._timer);
+            this._timer = undefined;
+        }
+        this._startTimeStamp = Date.now();
+    }
+}
+
+export class GenericTrainingInstance extends TrainingInstance {
+
+    public trainingStatus: BehaviorSubject<TrainingState> = new BehaviorSubject<TrainingState>(TrainingState.Stopped);
+
+    constructor(title: string, targetedTrainingTime: number, targetPowerZones: Metric[] = []) {
+        super(title, targetedTrainingTime, targetPowerZones);
+        // Register Logging Handler
+        this.registerHandler((trainingSnapshot: TrainingSnapshot) => {
+            console.log(trainingSnapshot.currentTrainingDifference);
+            console.log(trainingSnapshot.currentTrainingTimestamp);
+        });
+    }
+
+    public start(): void {
+        this.trainingStatus.next(TrainingState.Running);
+        super.start();
+    }
+
+    public stop(): void {
+        this.trainingStatus.next(TrainingState.Stopped);
+        super.stop();
+    }
+
+    public continue(): void {
+        this.trainingStatus.next(TrainingState.Running);
+        super.continue();
+    }
+
+    public pause(): void {
+        this.trainingStatus.next(TrainingState.Paused);
+        super.pause();
+    }
+}
+
 export class TrainingInstanceWahoo implements Training {
 
     public id: string;
