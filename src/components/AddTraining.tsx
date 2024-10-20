@@ -57,6 +57,7 @@ export function AddTraining() {
   }
 
   const saveTraining = () => {
+    // store training to local storage
     const training: Training = {
       id: crypto.randomUUID(),
       title: trainingTitle,
@@ -65,6 +66,11 @@ export function AddTraining() {
       cloudSynchronised: false
     }
     localStorage.setItem(`training-${training.id}`, JSON.stringify(training));
+
+    // set back controls
+    setTimeStamp(0);
+    setTargetPower(0);
+    setTrainingTitle("");
   }
 
   return (
