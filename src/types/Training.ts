@@ -48,15 +48,15 @@ export abstract class TrainingInstance implements Training {
     targetedTimeInFiveHeartRateZones?: number | undefined;
     _targetPowerZones: Metric[];
     instanteneousPower?: Subject<Metric> | undefined;
-    trainingStatus?: Subject<TrainingState> | undefined;
     cloudSynchronised?: boolean | undefined;
-
+    
     // Time related
     private _timer: NodeJS.Timeout | undefined = undefined;
     private _refreshInterval: number = 250;
     private _startTimeStamp: number = 0;
-
+    
     private handler: Array<(trainingSnapshot: TrainingSnapshot) => void> = [];
+    public trainingStatus: BehaviorSubject<TrainingState> = new BehaviorSubject<TrainingState>(TrainingState.Stopped);
 
     constructor(title: string, targetedTrainingTime: number, targetPowerZones: Metric[] = []) {
         this.id = crypto.randomUUID();
@@ -106,6 +106,7 @@ export abstract class TrainingInstance implements Training {
     }
 
     public start(){
+        this.trainingStatus.next(TrainingState.Running);
         if(this._startTimeStamp === 0){
             this._startTimeStamp = Date.now();
             this._timer = setInterval(() => this.tick(), this._refreshInterval);
@@ -113,17 +114,20 @@ export abstract class TrainingInstance implements Training {
     }
 
     public stop(){
+        this.trainingStatus.next(TrainingState.Stopped);
         clearInterval(this._timer);
         this._timer = undefined;
     }
 
     public continue(){
+        this.trainingStatus.next(TrainingState.Running);
         if(!this._timer) {
             this._timer = setInterval(() => this.tick(), this._refreshInterval);
         }
     }
 
     public pause(){
+        this.trainingStatus.next(TrainingState.Paused);
         if(this._timer){
             clearInterval(this._timer);
             this._timer = undefined;
@@ -133,8 +137,6 @@ export abstract class TrainingInstance implements Training {
 }
 
 export class GenericTrainingInstance extends TrainingInstance {
-
-    public trainingStatus: BehaviorSubject<TrainingState> = new BehaviorSubject<TrainingState>(TrainingState.Stopped);
 
     constructor(title: string, targetedTrainingTime: number, targetPowerZones: Metric[] = []) {
         super(title, targetedTrainingTime, targetPowerZones);
@@ -146,22 +148,18 @@ export class GenericTrainingInstance extends TrainingInstance {
     }
 
     public start(): void {
-        this.trainingStatus.next(TrainingState.Running);
         super.start();
     }
 
     public stop(): void {
-        this.trainingStatus.next(TrainingState.Stopped);
         super.stop();
     }
 
     public continue(): void {
-        this.trainingStatus.next(TrainingState.Running);
         super.continue();
     }
 
     public pause(): void {
-        this.trainingStatus.next(TrainingState.Paused);
         super.pause();
     }
 }
