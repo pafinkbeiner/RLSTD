@@ -1,22 +1,23 @@
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, interval, takeWhile } from "rxjs";
 import { Metric, Training, TrainingSnapshot, TrainingState } from "../Training";
 
 export abstract class TrainingInstance implements Training {
-    id: string;
+    readonly id: string;
     title: string;
-    description?: string | undefined;
+    description?: string;
     targetedTrainingTime: number;
-    targetedTimeInTwoHeartRateZones?: number | undefined;
-    targetedTimeInThreeHeartRateZones?: number | undefined;
-    targetedTimeInFiveHeartRateZones?: number | undefined;
+    targetedTimeInTwoHeartRateZones?: number;
+    targetedTimeInThreeHeartRateZones?: number;
+    targetedTimeInFiveHeartRateZones?: number;
     _targetPowerZones: Metric[];
-    cloudSynchronised?: boolean | undefined;
-    
+    cloudSynchronised?: boolean;
+
     // Time related
-    private _timer: NodeJS.Timeout | undefined = undefined;
+    private _timerSubscription: any = undefined;
     private _refreshInterval: number = 250;
     private _startTimeStamp: number = 0;
-    
+    private _pausedDuration: number = 0;
+
     private handler: Array<(trainingSnapshot: TrainingSnapshot) => void> = [];
     public trainingStatus: BehaviorSubject<TrainingState> = new BehaviorSubject<TrainingState>(TrainingState.Stopped);
 
@@ -28,18 +29,19 @@ export abstract class TrainingInstance implements Training {
     }
 
     public get targetPowerZones() {
-        if(this._targetPowerZones.length > 0){
+        if (this._targetPowerZones.length > 0) {
             const firstPowerZone = this._targetPowerZones[0];
             const lastPowerZone = this._targetPowerZones[this._targetPowerZones.length - 1];
             return [{
                 ts: 0,
                 target: firstPowerZone.target
-            }, 
-            ...this._targetPowerZones, {
+            },
+            ...this._targetPowerZones,
+            {
                 ts: this.targetedTrainingTime,
                 target: lastPowerZone.target
             }];
-        }else{
+        } else {
             return this._targetPowerZones;
         }
     }
@@ -48,51 +50,60 @@ export abstract class TrainingInstance implements Training {
         this._targetPowerZones = value;
     }
 
-    public registerHandler(handler: (trainingSnapshot: TrainingSnapshot) => void){
+    public registerHandler(handler: (trainingSnapshot: TrainingSnapshot) => void) {
         this.handler.push(handler);
     }
 
-    private tick(){
-        const currentTrainingTimestamp: number = Date.now() - this._startTimeStamp;
-        const currentTrainingDifference: number = Math.round(currentTrainingTimestamp / 1000);
-        const targetPowerZone = this.targetPowerZones.find((v) => v.ts === currentTrainingDifference);
+    private tick(currentTime: number) {
+        const currentTrainingTimestamp = currentTime - this._startTimeStamp - this._pausedDuration;  // Current timestamp in ms since start minus paused time
+        const currentTrainingDifference = Math.round(currentTrainingTimestamp / 1000);  // Convert to seconds
+        const targetPowerZone = this.targetPowerZones.find(v => v.ts <= currentTrainingDifference && v.ts + this._refreshInterval / 1000 >= currentTrainingDifference);  // Target zone match
 
         const trainingSnapshot: TrainingSnapshot = {
             currentTrainingTimestamp,
             currentTrainingDifference,
             targetPowerZone
-        }
+        };
 
-        this.handler.forEach((v) => v(trainingSnapshot));
+        this.handler.forEach(h => h(trainingSnapshot));
     }
 
-    public start(){
-        this.trainingStatus.next(TrainingState.Running);
-        if(this._startTimeStamp === 0){
+    private startTimer() {
+        this._timerSubscription = interval(this._refreshInterval)
+            .pipe(takeWhile(() => this.trainingStatus.value === TrainingState.Running))
+            .subscribe(() => this.tick(Date.now()));
+    }
+
+    private stopTimer() {
+        if (this._timerSubscription) {
+            this._timerSubscription.unsubscribe();
+            this._timerSubscription = undefined;
+        }
+    }
+
+    public start() {
+        if (this._startTimeStamp === 0) {
             this._startTimeStamp = Date.now();
-            this._timer = setInterval(() => this.tick(), this._refreshInterval);
         }
-    }
 
-    public stop(){
-        this.trainingStatus.next(TrainingState.Stopped);
-        clearInterval(this._timer);
-        this._timer = undefined;
-    }
-
-    public continue(){
         this.trainingStatus.next(TrainingState.Running);
-        if(!this._timer) {
-            this._timer = setInterval(() => this.tick(), this._refreshInterval);
-        }
+        this.startTimer();
     }
 
-    public pause(){
+    public stop() {
+        this.trainingStatus.next(TrainingState.Stopped);
+        this.stopTimer();
+        this._pausedDuration = 0;
+    }
+
+    public pause() {
         this.trainingStatus.next(TrainingState.Paused);
-        if(this._timer){
-            clearInterval(this._timer);
-            this._timer = undefined;
-        }
-        this._startTimeStamp = Date.now();
+        this.stopTimer();
+        this._pausedDuration += Date.now() - this._startTimeStamp;  // Accumulate paused time
+    }
+
+    public continue() {
+        this.trainingStatus.next(TrainingState.Running);
+        this.startTimer();
     }
 }

@@ -31,8 +31,9 @@ export class WahooTrainingInstance extends TrainingInstance {
         });
         // Register Logging Handler
         this.registerHandler((trainingSnapshot: TrainingSnapshot) => {
-            console.log(trainingSnapshot.currentTrainingDifference);
-            console.log(trainingSnapshot.currentTrainingTimestamp);
+            console.log("-----------------------------------")
+            console.log("Current Training Difference: ", trainingSnapshot.currentTrainingDifference);
+            console.log("Current Training Timestamp: ", trainingSnapshot.currentTrainingTimestamp);
         });
         // Register Current Power Handler
         this.registerHandler((trainingSnapshot: TrainingSnapshot) => {
