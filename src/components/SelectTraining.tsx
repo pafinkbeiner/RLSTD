@@ -10,12 +10,13 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { useEffect, useState } from "react"
-import { Metric, Training, TrainingInstanceWahoo } from "@/types/Training";
+import { Metric, Training } from "@/types/Training";
 import InformationCard from "./InformationCard";
 import { Trash, Trash2, Zap } from "lucide-react";
+import { WahooTrainingInstance } from "@/types/TrainingInstances/WahooTrainingInstance";
 
 interface Props {
-  setTraining: React.Dispatch<React.SetStateAction<TrainingInstanceWahoo | undefined>>
+  setTraining: React.Dispatch<React.SetStateAction<WahooTrainingInstance | undefined>>
 }
 
 export function SelectTraining(props: Props) {
@@ -40,7 +41,7 @@ export function SelectTraining(props: Props) {
 
   const loadTraining = () => {
     if(selectedTraining !== undefined){
-      props.setTraining(new TrainingInstanceWahoo(selectedTraining.title, selectedTraining.targetedTrainingTime, selectedTraining.targetPowerZones));
+      props.setTraining(new WahooTrainingInstance(selectedTraining.title, selectedTraining.targetedTrainingTime, selectedTraining.targetPowerZones));
     }
   }
 

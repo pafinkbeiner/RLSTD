@@ -6,10 +6,11 @@ import ConnectivityIndicator from "./components/ConnectivityIndicator";
 import InformationCard from "./components/InformationCard";
 import { Gauge, RotateCwIcon, Zap } from "lucide-react";
 import { TrainingChart } from "./components/TrainingChart";
-import { exampleTraining, exampleTrainingData, TrainingInstanceWahoo, TrainingState } from "./types/Training";
+import { exampleTraining, exampleTrainingData, TrainingState } from "./types/Training";
 import { AddTraining } from "./components/AddTraining";
 import { SelectTraining } from "./components/SelectTraining";
 import { Subscription } from "rxjs";
+import { WahooTrainingInstance } from "./types/TrainingInstances/WahooTrainingInstance";
 
 const Training = () => {
 
@@ -20,7 +21,7 @@ const Training = () => {
   const [instantaneousSpeed, setInstantaneousSpeed] = useState<number | undefined>(0);
 
   const [trainingStatus, setTrainingStatus] = useState<TrainingState>(TrainingState.Stopped);
-  const [training, setTraining] = useState<TrainingInstanceWahoo | undefined>(undefined);
+  const [training, setTraining] = useState<WahooTrainingInstance | undefined>(undefined);
 
   useEffect(() => {
     const sub_connected = connected.asObservable().subscribe(v => {
@@ -42,7 +43,7 @@ const Training = () => {
   useEffect(() => {
     let subscription: Subscription  | undefined = undefined;
     if(training){
-      subscription = training.trainingStatus.subscribe(v => {
+      subscription = training.trainingStatus.subscribe((v: TrainingState) => {
         setTrainingStatus(v);
       })
     }
@@ -59,7 +60,7 @@ const Training = () => {
       <ConnectivityIndicator onClick={isConnected ? () => disconnect() : async () => await connect()} className="position-absolute top-0 right-0" connected={isConnected} />
       <AddTraining />
       <div className="flex flex-row gap-3">
-        <Button onClick={() => setTraining(new TrainingInstanceWahoo(exampleTrainingData.title, exampleTrainingData.targetedTrainingTime, exampleTrainingData.targetPowerZones))}>Load Example Training</Button>
+        <Button onClick={() => setTraining(new WahooTrainingInstance(exampleTrainingData.title, exampleTrainingData.targetedTrainingTime, exampleTrainingData.targetPowerZones))}>Load Example Training</Button>
         <SelectTraining setTraining={setTraining}/>
       </div>
       {training &&
