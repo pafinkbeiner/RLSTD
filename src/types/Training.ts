@@ -12,6 +12,10 @@ export interface Metric {
     target: number;
 }
 
+export interface ExtMetric extends Metric {
+    instant?: number;
+}
+
 export interface Training {
     id: string;
     title: string;
@@ -21,14 +25,16 @@ export interface Training {
     targetedTimeInThreeHeartRateZones?: number;
     targetedTimeInFiveHeartRateZones?: number;
     targetPowerZones: Metric[];
+    trainingChartData?: ExtMetric[];
     instanteneousPower?: Subject<Metric>;
     trainingStatus?: Subject<TrainingState>;
-    cloudSynchronised?: boolean
+    cloudSynchronised?: boolean;
     // Essentials
     start?: () => void;
     stop?: () => void;
     continue?: () => void;    
     pause?: () => void;
+    save?: () => void;
 }
 
 export interface TrainingSnapshot {

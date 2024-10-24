@@ -9,10 +9,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import AddTrainingAreaChart, { Operation } from "./AddTrainingAreaChart"
+import AddTrainingAreaChart from "./AddTrainingAreaChart"
 import { useState } from "react"
 import { Metric, Training } from "@/types/Training";
-import { Subject } from "rxjs";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Slider } from "./ui/slider";

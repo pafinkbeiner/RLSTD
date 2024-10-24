@@ -14,16 +14,16 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { Subject } from "rxjs"
+import { BehaviorSubject, Subject } from "rxjs"
 import { useEffect, useState } from "react"
-import { Training, TrainingState } from "@/types/Training"
+import { ExtMetric, Training, TrainingState } from "@/types/Training"
 
 const chartConfig = {
-  targetPower: {
+  target: {
     label: "TargetPower",
     color: "hsl(var(--chart-1))",
   },
-  instantaneousPower: {
+  instant: {
     label: "Instantaneous Power",
     color: "hsl(var(--chart-2))",
   },
@@ -35,11 +35,12 @@ interface IProps {
 
 export function TrainingChart({ training }: IProps) {
 
-  const [chartData, setChartData] = useState<{ ts: number, targetPower: number }[]>([])
+  const [chartData, setChartData] = useState<ExtMetric[]>([])
   const [trainingStatus, setTrainingStatus] = useState<TrainingState>(TrainingState.Stopped);
 
   useEffect(() => {
 
+    // Target Training Power Zones
     let tempChartData = [];
     let lastTargetPower = training.targetPowerZones[0].target;
     for (let i = 0; i < training.targetedTrainingTime; i++) {
@@ -49,11 +50,12 @@ export function TrainingChart({ training }: IProps) {
       }
       tempChartData.push({
         ts: i,
-        targetPower: lastTargetPower,
+        target: lastTargetPower,
       });
     }
     setChartData(tempChartData);
 
+    // Instant Power Data
     const subscription = training?.instanteneousPower?.asObservable().subscribe((v) => {
       setChartData((prevChartData: any) => {
         const existingDataPointIndex = prevChartData.findIndex((dataPoint: any) => dataPoint.ts === v.ts);
@@ -61,18 +63,21 @@ export function TrainingChart({ training }: IProps) {
           const updatedChartData = [...prevChartData];
           updatedChartData[existingDataPointIndex] = {
             ...updatedChartData[existingDataPointIndex],
-            instantaneousPower: v.target,
+            instant: v.target,
           };
+          training.trainingChartData = updatedChartData;
           return updatedChartData;
         }
 
-        return [
+        const updatedChartData = [
           ...prevChartData,
           {
             ts: v.ts,
-            instantaneousPower: v.target,
+            instant: v.target,
           },
         ].sort((a, b) => a.ts - b.ts);
+        training.trainingChartData = updatedChartData;
+        return updatedChartData;
       });
     });
 
@@ -113,25 +118,17 @@ export function TrainingChart({ training }: IProps) {
               tickFormatter={(value) => value}
             />
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-            {/* <Line
-              dataKey="targetPower"
-              type="monotone"
-              stroke="var(--color-instantaneousPower)"
-              strokeWidth={2}
-              dot={false}
-            /> */}
-            <Area dataKey="targetPower"
+            <Area dataKey="target"
               type="stepAfter"
-              fill="var(--color-targetPower)"
+              fill="var(--color-target)"
               fillOpacity={0.4}
-              stroke="var(--color-targetPower)"
+              stroke="var(--color-target)"
               isAnimationActive={false}
             />
-            {/* <Bar dataKey="ts" fill="var(--color-targetPower)" radius={8} isAnimationActive={false} /> */}
             <Line
-              dataKey="instantaneousPower"
+              dataKey="instant"
               type="monotone"
-              stroke="var(--color-instantaneousPower)"
+              stroke="var(--color-instant)"
               strokeWidth={2}
               dot={false}
               isAnimationActive={false}

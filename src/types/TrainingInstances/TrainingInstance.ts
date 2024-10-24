@@ -1,5 +1,5 @@
 import { BehaviorSubject, interval, takeWhile } from "rxjs";
-import { Metric, Training, TrainingSnapshot, TrainingState } from "../Training";
+import { ExtMetric, Metric, Training, TrainingSnapshot, TrainingState } from "../Training";
 
 export abstract class TrainingInstance implements Training {
     readonly id: string;
@@ -9,6 +9,7 @@ export abstract class TrainingInstance implements Training {
     targetedTimeInTwoHeartRateZones?: number;
     targetedTimeInThreeHeartRateZones?: number;
     targetedTimeInFiveHeartRateZones?: number;
+    trainingChartData?: ExtMetric[] | undefined;
     _targetPowerZones: Metric[];
     cloudSynchronised?: boolean;
 
@@ -105,5 +106,25 @@ export abstract class TrainingInstance implements Training {
     public continue() {
         this.trainingStatus.next(TrainingState.Running);
         this.startTimer();
+    }
+
+    public save(){
+        if(this.trainingChartData){
+            const training: Training = {
+                id: this.id,
+                title: this.title,
+                targetedTrainingTime: this.targetedTrainingTime,
+                targetPowerZones: this.targetPowerZones,
+                trainingChartData: this.trainingChartData,
+            }
+            if(this.cloudSynchronised){
+                // TODO: Save to cloud
+                console.log("Save to cloud ...");
+            } else {
+                // TODO: Save to localStorage
+                console.log("Save to local Storage ...");
+                localStorage.setItem(`finished-training-${this.id}`, JSON.stringify(training));
+            }
+        }
     }
 }

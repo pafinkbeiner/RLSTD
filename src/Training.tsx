@@ -9,7 +9,7 @@ import { TrainingChart } from "./components/TrainingChart";
 import { exampleTraining, exampleTrainingData, TrainingState } from "./types/Training";
 import { AddTraining } from "./components/AddTraining";
 import { SelectTraining } from "./components/SelectTraining";
-import { Subscription } from "rxjs";
+import { BehaviorSubject, Subscription } from "rxjs";
 import { WahooTrainingInstance } from "./types/TrainingInstances/WahooTrainingInstance";
 
 const Training = () => {
@@ -77,7 +77,11 @@ const Training = () => {
             <Button disabled={(trainingStatus == TrainingState.Running) || (trainingStatus == TrainingState.Paused)} onClick={async () => await training.start()}>Start Training</Button>
             <Button disabled={(trainingStatus == TrainingState.Running) || (trainingStatus == TrainingState.Stopped)} onClick={async () => training.continue()}>Continue Training</Button>
             <Button disabled={(trainingStatus == TrainingState.Paused) || (trainingStatus == TrainingState.Stopped)} onClick={async () => training.pause()}>Pause Training</Button>
-            <Button disabled={(trainingStatus == TrainingState.Stopped)} onClick={async () => { training.stop(); setTraining(undefined); }}>Stop Training</Button>
+            <Button disabled={(trainingStatus == TrainingState.Stopped)} onClick={async () => { 
+              training.stop(); 
+              training.save(); 
+              // setTraining(undefined); 
+            }}>Stop Training</Button>
           </div>
         </>}
     </>

@@ -30,16 +30,16 @@ export class WahooTrainingInstance extends TrainingInstance {
             this._currentInstantaneousSpeed = value.instantaneousSpeed;
         });
         // Register Logging Handler
-        this.registerHandler((trainingSnapshot: TrainingSnapshot) => {
-            console.log("-----------------------------------")
-            console.log("Current Training Difference: ", trainingSnapshot.currentTrainingDifference);
-            console.log("Current Training Timestamp: ", trainingSnapshot.currentTrainingTimestamp);
-        });
+        // this.registerHandler((trainingSnapshot: TrainingSnapshot) => {
+        //     console.log("-----------------------------------")
+        //     console.log("Current Training Difference: ", trainingSnapshot.currentTrainingDifference);
+        //     console.log("Current Training Timestamp: ", trainingSnapshot.currentTrainingTimestamp);
+        // });
         // Register Current Power Handler
         this.registerHandler((trainingSnapshot: TrainingSnapshot) => {
             this.instanteneousPower.next({ts: trainingSnapshot.currentTrainingDifference, target: this._currentInstantaneousPower});
         });
-        // Register 
+        // Register Target Power Change Handler
         this.registerHandler(async (trainingSnapshot: TrainingSnapshot) => {
             const targetPowerZone = this._targetPowerZones.find((v) => v.ts === trainingSnapshot.currentTrainingDifference);
             if(targetPowerZone){
