@@ -1,62 +1,69 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
+"use client"
 
+import * as React from "react"
+import {
+  BookOpen,
+  Bot,
+  GalleryVerticalEnd,
+  Settings2,
+  SquareTerminal,
+} from "lucide-react"
+
+import { NavMain } from "@/components/nav-main"
+import { NavUser } from "@/components/nav-user"
+import { TeamSwitcher } from "@/components/team-switcher"
 import {
   Sidebar,
   SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarRail,
 } from "@/components/ui/sidebar"
-import { Link } from "react-router-dom"
 
-// Menu items.
-const items = [
-  {
-    title: "Dashboard",
-    url: "/",
-    icon: Home,
+// This is sample data.
+const data = {
+  user: {
+    name: "shadcn",
+    email: "m@example.com",
+    avatar: "/avatars/shadcn.jpg",
   },
-  {
-    title: "Training",
-    url: "/Training",
-    icon: Inbox,
-  },
-  {
-    title: "History",
-    url: "/History",
-    icon: Calendar,
-  },
-  {
-    title: "Settings",
-    url: "/Settings",
-    icon: Settings,
-  }
-]
+  navMain: [
+    {
+      title: "Home",
+      url: "/",
+      icon: SquareTerminal,
+    },
+    {
+      title: "Training",
+      url: "/Training",
+      icon: Bot,
+    },
+    {
+      title: "History",
+      url: "/History",
+      icon: BookOpen,
+    },
+    {
+      title: "Settings",
+      url: "/Settings",
+      icon: Settings2,
+    },
+  ]
+}
 
-export function AppSidebar() {
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon" {...props}>
+      <SidebarHeader>
+        <TeamSwitcher />
+      </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link to={item.url} >
-                      <item.icon /> {item.title}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <NavMain items={data.navMain} />
       </SidebarContent>
+      {/* <SidebarFooter>
+        <NavUser user={data.user} />
+      </SidebarFooter> */}
+      <SidebarRail />
     </Sidebar>
   )
 }
