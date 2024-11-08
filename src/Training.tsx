@@ -6,7 +6,7 @@ import ConnectivityIndicator from "./components/ConnectivityIndicator";
 import InformationCard from "./components/InformationCard";
 import { Gauge, RotateCwIcon, Zap } from "lucide-react";
 import { TrainingChart } from "./components/TrainingChart";
-import { exampleTraining, exampleTrainingData, TrainingState } from "./types/Training";
+import { TrainingState } from "./types/Training";
 import { AddTraining } from "./components/AddTraining";
 import { SelectTraining } from "./components/SelectTraining";
 import { BehaviorSubject, Subscription } from "rxjs";
@@ -60,7 +60,6 @@ const Training = () => {
       <ConnectivityIndicator onClick={isConnected ? () => disconnect() : async () => await connect()} className="position-absolute top-0 right-0" connected={isConnected} />
       <AddTraining />
       <div className="flex flex-row gap-3">
-        <Button onClick={() => setTraining(new WahooTrainingInstance(exampleTrainingData.title, exampleTrainingData.targetedTrainingTime, exampleTrainingData.targetPowerZones))}>Load Example Training</Button>
         <SelectTraining setTraining={setTraining}/>
       </div>
       {training &&

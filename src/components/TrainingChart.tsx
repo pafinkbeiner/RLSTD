@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/chart"
 import { BehaviorSubject, Subject } from "rxjs"
 import { useEffect, useState } from "react"
-import { ExtMetric, Training, TrainingState } from "@/types/Training"
+import { ExtMetric, InstantiatedTraining, Training, TrainingState } from "@/types/Training"
 
 const chartConfig = {
   target: {
@@ -30,7 +30,7 @@ const chartConfig = {
 } satisfies ChartConfig
 
 interface IProps {
-  training: Training;
+  training: InstantiatedTraining;
 }
 
 export function TrainingChart({ training }: IProps) {
