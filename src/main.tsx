@@ -16,21 +16,21 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
     },
     {
-        path: "/training",
+        path: "/Training/",
         element: <BaseLayout><Training /></BaseLayout>,
         errorElement: <ErrorPage />
     },
     {
-        path: "/settings",
+        path: "/Settings/",
         element: <BaseLayout><Settings /></BaseLayout>,
         errorElement: <ErrorPage />
     },
     {
-        path: "/history",
+        path: "/History/",
         element: <BaseLayout><History /></BaseLayout>,
         errorElement: <ErrorPage />
     },
-], {basename: "/RLSTD"});
+], {basename: "/RLSTD/"});
 
 createRoot(document.getElementById('root')!).render(
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
