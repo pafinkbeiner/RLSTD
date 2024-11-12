@@ -35,8 +35,9 @@ interface IProps {
 
 export function TrainingChart({ training }: IProps) {
 
-  const [chartData, setChartData] = useState<ExtMetric[]>([])
+  const [chartData, setChartData] = useState<ExtMetric[]>([]);
   const [trainingStatus, setTrainingStatus] = useState<TrainingState>(TrainingState.Stopped);
+  const [currentTrainingSeconds, setCurrentTrainingSeconds] = useState(0);
 
   useEffect(() => {
 
@@ -57,6 +58,7 @@ export function TrainingChart({ training }: IProps) {
 
     // Instant Power Data
     const subscription = training?.instanteneousPower?.asObservable().subscribe((v) => {
+      setCurrentTrainingSeconds(v.ts);
       setChartData((prevChartData: any) => {
         const existingDataPointIndex = prevChartData.findIndex((dataPoint: any) => dataPoint.ts === v.ts);
         if (existingDataPointIndex !== -1) {
@@ -94,7 +96,7 @@ export function TrainingChart({ training }: IProps) {
   return (
     <Card className="flex-1 min-w-64">
       <CardHeader>
-        <CardTitle>{training.title} {trainingStatus === TrainingState.Running && <span className="text-green-500">Running</span>}</CardTitle>
+        <CardTitle>{training.title} {trainingStatus === TrainingState.Running && <span className="text-green-500">Running ({Math.floor((currentTrainingSeconds / 60))}min{currentTrainingSeconds % 60}s)</span>}</CardTitle>
         {training.description && <CardDescription>{training.description}</CardDescription>}
       </CardHeader>
       <CardContent>
