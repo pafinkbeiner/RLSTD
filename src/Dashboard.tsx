@@ -6,6 +6,9 @@ import { convert_0x2A63, convert_0x2AD2, convert_0x2AD6, convert_0x2AD8 } from '
 import { SpeedChart } from './SpeedChart'
 import InformationCard from './components/InformationCard'
 import FlagsBox from './components/FlagsBox'
+import { Card, CardTitle } from './components/ui/card'
+import { ScrollArea } from '@radix-ui/react-scroll-area'
+import { TrainingOverviewCard } from './components/TrainingOverviewCard'
 
 function Dashboard() {
 
@@ -80,6 +83,7 @@ function Dashboard() {
       <div className='flex flex-row items-center justify-between w-full gap-5 flex-wrap'>
         <SpeedChart size={100} title="Speed" description="Thats the current Speed" data={notify_0x2AD2} getter={(v) => convert_0x2AD2(v).instantaneousSpeed} />
         <FlagsBox />
+        <TrainingOverviewCard />
       </div>
 
       {/* <ConnectedState isConnected={isConnected} /> */}
