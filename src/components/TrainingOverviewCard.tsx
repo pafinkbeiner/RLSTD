@@ -52,7 +52,7 @@ export function TrainingOverviewCard() {
                             <TableBody>
                                 {trainings.map((training: Training) => {
                                     return (
-                                        <TableRow>
+                                        <TableRow key={training.id} className="cursor-pointer" onClick={() => navigate("/Training", {state: {training: training}})}>
                                             <TableCell>{training.title}</TableCell>
                                             <TableCell>{training.targetedTrainingTime}s</TableCell>
                                             <TableCell>{training.targetPowerZones.length}</TableCell>

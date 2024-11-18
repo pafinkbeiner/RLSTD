@@ -65,7 +65,7 @@ const History = () => {
         <TableBody>
           {trainings.map((training: Training) => {
             return (
-              <TableRow className="cursor-pointer" onClick={() => setSelectedTraining(training)}>
+              <TableRow key={training.id} className="cursor-pointer" onClick={() => setSelectedTraining(training)}>
                 <TableCell>{training.title}</TableCell>
                 <TableCell>{training.description ?? "-"}</TableCell>
                 <TableCell>{training.targetedTrainingTime}</TableCell>

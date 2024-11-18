@@ -6,13 +6,16 @@ import ConnectivityIndicator from "./components/ConnectivityIndicator";
 import InformationCard from "./components/InformationCard";
 import { Gauge, RotateCwIcon, Zap } from "lucide-react";
 import { TrainingChart } from "./components/TrainingChart";
-import { TrainingState } from "./types/Training";
+import { Training as TrainingType, TrainingState } from "./types/Training";
 import { AddTraining } from "./components/AddTraining";
 import { SelectTraining } from "./components/SelectTraining";
 import { BehaviorSubject, Subscription } from "rxjs";
 import { WahooTrainingInstance } from "./types/TrainingInstances/WahooTrainingInstance";
+import { useLocation } from "react-router-dom";
 
 const Training = () => {
+
+  const location = useLocation()
 
   const [isConnected, setIsConnected] = useState(false);
 
@@ -22,6 +25,13 @@ const Training = () => {
 
   const [trainingStatus, setTrainingStatus] = useState<TrainingState>(TrainingState.Stopped);
   const [training, setTraining] = useState<WahooTrainingInstance | undefined>(undefined);
+
+  useEffect(() => {
+    const training: TrainingType | undefined = location.state?.training;
+    if(training !== undefined) {
+      setTraining(new WahooTrainingInstance(training.title, training.targetedTrainingTime, training.targetPowerZones))
+    }
+  }, [location]);
 
   useEffect(() => {
     const sub_connected = connected.asObservable().subscribe(v => {
