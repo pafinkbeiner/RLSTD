@@ -1,10 +1,9 @@
-import { Area, Bar, BarChart, CartesianGrid, ComposedChart, LabelList, Line, LineChart, XAxis, YAxis } from "recharts"
+import { Area,CartesianGrid, ComposedChart, Line, XAxis } from "recharts"
 
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -14,9 +13,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { BehaviorSubject, Subject } from "rxjs"
 import { useEffect, useState } from "react"
-import { ExtMetric, InstantiatedTraining, Training, TrainingState } from "@/types/Training"
+import { ExtMetric, InstantiatedTraining, TrainingState } from "@/types/Training"
 
 const chartConfig = {
   target: {
@@ -100,7 +98,7 @@ export function TrainingChart({ training }: IProps) {
         {training.description && <CardDescription>{training.description}</CardDescription>}
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} style={{ height: "15rem", width: "100%" }}>
+        <ChartContainer config={chartConfig} style={{ height: "10rem", width: "100%" }}>
 
           <ComposedChart
             accessibilityLayer

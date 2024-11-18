@@ -10,13 +10,16 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import AddTrainingAreaChart from "./AddTrainingAreaChart"
-import { useState } from "react"
-import { Metric, Training } from "@/types/Training";
+import { useEffect, useState } from "react"
+import { InstantiatedTraining, Metric, Training } from "@/types/Training";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Slider } from "./ui/slider";
+import { TrainingChart } from "./TrainingChart";
+import { WahooTrainingInstance } from "@/types/TrainingInstances/WahooTrainingInstance";
 
 export function AddTraining() {
+
 
   const [timeStamp, setTimeStamp] = useState<number>(0);
   const [targetPower, setTargetPower] = useState<number>(0);
@@ -24,10 +27,16 @@ export function AddTraining() {
 
   const [chartData, setChartData] = useState<Array<Metric>>([
     { ts: 0, target: 100 },
-    { ts: 1, target: 200 },
-    { ts: 2, target: 150 },
     { ts: 3, target: 100 },
   ])
+
+  // Preview State
+  const [trainingPreview, setTrainingPreview] = useState<undefined | InstantiatedTraining>(undefined)
+  const [showTrainingPreview, setShowTrainingPreview] = useState(true);
+
+  useEffect(() => {
+    setTrainingPreview(new WahooTrainingInstance("Preview", chartData[chartData.length - 1].ts + 1, chartData))
+  }, [chartData]);
 
   const addChartData = (v: Metric) => {
     setChartData((prevChartData: any) => {
@@ -73,8 +82,6 @@ export function AddTraining() {
     setTrainingTitle("");
     setChartData([
       { ts: 0, target: 100 },
-      { ts: 1, target: 200 },
-      { ts: 2, target: 150 },
       { ts: 3, target: 100 },
     ]);
   }
@@ -92,7 +99,21 @@ export function AddTraining() {
           </SheetDescription>
         </SheetHeader>
         <div className="flex flex-col gap-3 pt-5 pb-5">
-          <AddTrainingAreaChart chartData={chartData} setTargetPower={setTargetPower} setTimeStamp={setTimeStamp} />
+
+          <div className="flex gap-4 w-full flex-wrap-reverse">
+            <div className="flex-1 flex flex-col gap-4">
+              <h4>Change Points</h4>
+              <AddTrainingAreaChart chartData={chartData} setTargetPower={setTargetPower} setTimeStamp={setTimeStamp} />
+            </div>
+            <div className="flex flex-col align gap-4 flex-1">
+              <div className="flex flex-row gap-2 justify-center">
+                <Button onClick={() => setShowTrainingPreview(true)}>Show Preview</Button>
+                <Button onClick={() => setShowTrainingPreview(false)}>Hide Preview</Button>
+              </div>
+              {trainingPreview && showTrainingPreview && <TrainingChart training={trainingPreview} />}
+            </div>
+          </div>
+
 
           <div className="flex flex-col gap-2 w-96">
             <div className="flex flex-row gap-5 items-center">
@@ -105,7 +126,7 @@ export function AddTraining() {
                 const value = parseInt(e.target.value);
                 setTimeStamp(value);
                 // if (!isNaN(value)) {
-                  
+
                 // }
               }} />
             </div>

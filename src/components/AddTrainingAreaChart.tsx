@@ -46,7 +46,7 @@ function AddTrainingAreaChart({ chartData, setTimeStamp, setTargetPower }: IProp
         <CardTitle></CardTitle>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} style={{ height: "15rem", width: "100%" }}>
+        <ChartContainer config={chartConfig} style={{ height: "10rem", width: "100%" }}>
           <AreaChart data={chartData}>
             <CartesianGrid vertical={false} />
             <XAxis dataKey="ts"
