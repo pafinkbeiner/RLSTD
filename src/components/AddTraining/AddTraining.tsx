@@ -9,15 +9,16 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import AddTrainingAreaChart from "./AddTrainingAreaChart"
+import AddTrainingAreaChart from "../AddTrainingAreaChart"
 import { useEffect, useState } from "react"
 import { InstantiatedTraining, Metric, Training } from "@/types/Training";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Slider } from "./ui/slider";
-import { TrainingChart } from "./TrainingChart";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Slider } from "../ui/slider";
+import { TrainingChart } from "../TrainingChart";
 import { WahooTrainingInstance } from "@/types/TrainingInstances/WahooTrainingInstance";
-import { ScrollArea } from "./ui/scroll-area";
+import { ScrollArea } from "../ui/scroll-area";
+import TargetPowerControl from "./TargetPowerControl";
 
 export function AddTraining() {
 
@@ -116,37 +117,44 @@ export function AddTraining() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 w-96">
-            <div className="flex flex-row gap-5 items-center">
-              <Label>Trainings titel</Label>
-              <Input type="string" value={trainingTitle} onChange={(e) => setTrainingTitle(e.target.value)} />
+          <div className="flex flex-row gap-2 w-full flex-wrap">
+            <div className="border p-3 rounded-md flex flex-col gap-2">
+              <div className="flex flex-row gap-5 items-center">
+                <Label>Trainings titel</Label>
+                <Input type="string" value={trainingTitle} onChange={(e) => setTrainingTitle(e.target.value)} />
+              </div>
             </div>
-            <div className="flex flex-row gap-5 items-center">
-              <Label>Timestamp</Label>
-              <Input type="number" value={timeStamp} onChange={(e) => {
-                const value = parseInt(e.target.value);
-                setTimeStamp(value);
-                // if (!isNaN(value)) {
-
-                // }
-              }} />
-            </div>
-            <div className="flex flex-row gap-5 items-center">
-              <Label>Target Power</Label>
-              <div className="flex flex-row gap-3 w-full">
-                <Slider onValueChange={(e) => setTargetPower(e[0])} defaultValue={[targetPower]} value={[targetPower]} max={1000} step={10} />
-                ({targetPower})
+            <div className="border p-3 rounded-md flex flex-col gap-2">
+              <div className="flex flex-row gap-4 items-center">
+                <Label>Timestamp</Label>
+                <div className="flex flex-row gap-1 items-center">
+                  <Input type="number" value={timeStamp} onChange={(e) => {
+                    const value = parseInt(e.target.value);
+                    setTimeStamp(value);
+                    // if (!isNaN(value)) {
+ 
+                    // }
+                  }} />
+                  <Button onClick={() => setTimeStamp(p => p + 10)} variant={"outline"}>+10</Button>
+                  <Button onClick={() => setTimeStamp(p => p + 60)} variant={"outline"}>+60</Button>
+                </div>
+              </div>
+              <div className="flex flex-row gap-5 items-center">
+                <Label>Target Power</Label>
+                <div className="flex flex-row gap-3 w-full items-center">
+                  <TargetPowerControl setTargetPower={setTargetPower} targetPower={targetPower}/>
+                </div>
               </div>
             </div>
           </div>
 
           <div className="flex flex-row gap-3">
             <Button onClick={() => addChartData({ ts: timeStamp, target: targetPower })}>Add Data Point</Button>
-            <Button onClick={() => removeChartData({ ts: timeStamp, target: targetPower })}>Remove Data Point</Button>
+            <Button variant={"outline"} onClick={() => removeChartData({ ts: timeStamp, target: targetPower })}>Remove Data Point</Button>
           </div>
         </div>
         </ScrollArea>
-        <SheetFooter>
+        <SheetFooter className="flex gap-2">
           <SheetClose asChild>
             <Button variant={"outline"}>Close</Button>
           </SheetClose>

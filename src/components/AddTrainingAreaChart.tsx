@@ -47,7 +47,7 @@ function AddTrainingAreaChart({ chartData, setTimeStamp, setTargetPower }: IProp
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} style={{ height: "10rem", width: "100%" }}>
-          <AreaChart data={chartData}>
+          <BarChart data={chartData}>
             <CartesianGrid vertical={false} />
             <XAxis dataKey="ts"
               style={{cursor: "pointer", fontSize: "1.5em"}}
@@ -66,8 +66,8 @@ function AddTrainingAreaChart({ chartData, setTimeStamp, setTargetPower }: IProp
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Area onClick={(e) => {console.log("2", e)}} type="stepAfter" dataKey="target" fill="var(--color-target)" radius={8} isAnimationActive={false} />
-          </AreaChart>
+            <Bar onClick={(e) => {console.log("2", e)}} type="stepAfter" dataKey="target" fill="var(--color-target)" radius={8} isAnimationActive={false} />
+          </BarChart>
         </ChartContainer>
       </CardContent>
     </Card>

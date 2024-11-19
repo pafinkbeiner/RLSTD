@@ -7,7 +7,7 @@ import InformationCard from "./components/InformationCard";
 import { Gauge, RotateCwIcon, Zap } from "lucide-react";
 import { TrainingChart } from "./components/TrainingChart";
 import { Training as TrainingType, TrainingState } from "./types/Training";
-import { AddTraining } from "./components/AddTraining";
+import { AddTraining } from "./components/AddTraining/AddTraining";
 import { SelectTraining } from "./components/SelectTraining";
 import { BehaviorSubject, Subscription } from "rxjs";
 import { WahooTrainingInstance } from "./types/TrainingInstances/WahooTrainingInstance";
