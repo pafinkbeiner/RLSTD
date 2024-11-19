@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ModeToggle } from "./components/mode-toggle"
 import { FinishedTraining, Training } from "./types/Training";
-import { PassivTrainingChart } from "./components/PassivTrainingChart";
+import { PassivTrainingChart } from "./components/AddTraining/PassivTrainingChart";
 import {
   Table,
   TableBody,

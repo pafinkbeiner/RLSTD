@@ -9,7 +9,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import AddTrainingAreaChart from "../AddTrainingAreaChart"
 import { useEffect, useState } from "react"
 import { InstantiatedTraining, Metric, Training } from "@/types/Training";
 import { Input } from "../ui/input";
@@ -19,6 +18,7 @@ import { TrainingChart } from "../TrainingChart";
 import { WahooTrainingInstance } from "@/types/TrainingInstances/WahooTrainingInstance";
 import { ScrollArea } from "../ui/scroll-area";
 import TargetPowerControl from "./TargetPowerControl";
+import AddTrainingAreaChart from "./AddTrainingAreaChart";
 
 export function AddTraining() {
 
