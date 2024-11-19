@@ -17,6 +17,7 @@ import { Label } from "./ui/label";
 import { Slider } from "./ui/slider";
 import { TrainingChart } from "./TrainingChart";
 import { WahooTrainingInstance } from "@/types/TrainingInstances/WahooTrainingInstance";
+import { ScrollArea } from "./ui/scroll-area";
 
 export function AddTraining() {
 
@@ -98,6 +99,7 @@ export function AddTraining() {
             Make Changes to the Training by adding or removing data points.
           </SheetDescription>
         </SheetHeader>
+        <ScrollArea className='flex flex-col  t-3 overflow-y-auto max-h-[40rem] pr-5'>
         <div className="flex flex-col gap-3 pt-5 pb-5">
 
           <div className="flex gap-4 w-full flex-wrap-reverse">
@@ -113,7 +115,6 @@ export function AddTraining() {
               {trainingPreview && showTrainingPreview && <TrainingChart training={trainingPreview} />}
             </div>
           </div>
-
 
           <div className="flex flex-col gap-2 w-96">
             <div className="flex flex-row gap-5 items-center">
@@ -144,6 +145,7 @@ export function AddTraining() {
             <Button onClick={() => removeChartData({ ts: timeStamp, target: targetPower })}>Remove Data Point</Button>
           </div>
         </div>
+        </ScrollArea>
         <SheetFooter>
           <SheetClose asChild>
             <Button variant={"outline"}>Close</Button>
