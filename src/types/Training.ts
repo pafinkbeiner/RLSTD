@@ -33,6 +33,9 @@ export interface Training {
 
 export interface FinishedTraining extends Training {
     trainingChartData?: ExtMetric[];
+    finishedTimestamp: number;
+    finishedTrainingScore?: number;
+    finsihedPowerMultiplier: number;
 }
 
 export interface InstantiatedTraining extends Training {

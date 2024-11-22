@@ -169,7 +169,7 @@ export function convert_0x2AD2(data: DataView): I0x2AD2 {
     return {
         flags: data.getUint16(0, true),
         instantaneousSpeed: data.getUint16(2, true) / 100,
-        instantaneousCadence: data.getUint16(4, true),
+        instantaneousCadence: data.getUint16(4, true) / 2, // TODO - Currently not sure how to convert cadence
         instantaneousPower: data.getUint16(6, true)
     }
 }

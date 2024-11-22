@@ -17,7 +17,7 @@ export const FINISHED_TRAINING_PREFIX = "finished-training-";
 
 const History = () => {
 
-  const [trainings, setTrainings] = useState<Training[]>([])
+  const [trainings, setTrainings] = useState<FinishedTraining[]>([])
   const [selectedTraining, setSelectedTraining] = useState<FinishedTraining>()
 
   const refreshState = () => {
@@ -60,16 +60,18 @@ const History = () => {
             <TableHead>Description</TableHead>
             <TableHead>Targeted Training Time (s)</TableHead>
             <TableHead>Currently Displayed</TableHead>
+            <TableHead>Finsihed at</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {trainings.map((training: Training) => {
+          {trainings.map((training: FinishedTraining) => {
             return (
               <TableRow key={training.id} className="cursor-pointer" onClick={() => setSelectedTraining(training)}>
                 <TableCell>{training.title}</TableCell>
                 <TableCell>{training.description ?? "-"}</TableCell>
                 <TableCell>{training.targetedTrainingTime}</TableCell>
                 <TableCell>{training.id == selectedTraining?.id && "Yes"}</TableCell>
+                <TableCell>{training.finishedTimestamp ? new Date(training.finishedTimestamp).toISOString(): "-"}</TableCell>
               </TableRow>
             )
           })}

@@ -37,7 +37,8 @@ export class WahooTrainingInstance extends TrainingInstance {
         // });
         // Register Current Power Handler
         this.registerHandler((trainingSnapshot: TrainingSnapshot) => {
-            this.instanteneousPower.next({ts: trainingSnapshot.currentTrainingDifference, target: this._currentInstantaneousPower});
+            const nextPowerTarget = this._currentInstantaneousPower * this.instantenousPowerMultiplier;
+            this.instanteneousPower.next({ts: trainingSnapshot.currentTrainingDifference, target: nextPowerTarget});
         });
         // Register Target Power Change Handler
         this.registerHandler(async (trainingSnapshot: TrainingSnapshot) => {

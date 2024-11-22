@@ -1,5 +1,5 @@
 import { BehaviorSubject, interval, takeWhile } from "rxjs";
-import { ExtMetric, Metric, Training, TrainingSnapshot, TrainingState } from "../Training";
+import { ExtMetric, FinishedTraining, Metric, Training, TrainingSnapshot, TrainingState } from "../Training";
 
 export abstract class TrainingInstance implements Training {
     readonly id: string;
@@ -12,12 +12,14 @@ export abstract class TrainingInstance implements Training {
     trainingChartData?: ExtMetric[] | undefined;
     _targetPowerZones: Metric[];
     cloudSynchronised?: boolean;
+    instantenousPowerMultiplier: number = 1;
 
     // Time related
     private _timerSubscription: any = undefined;
     private _refreshInterval: number = 250;
     private _startTimeStamp: number = 0;
     private _pausedDuration: number = 0;
+    private _finishedTimestamp: number = 0;
 
     private handler: Array<(trainingSnapshot: TrainingSnapshot) => void> = [];
     public trainingStatus: BehaviorSubject<TrainingState> = new BehaviorSubject<TrainingState>(TrainingState.Stopped);
@@ -95,6 +97,7 @@ export abstract class TrainingInstance implements Training {
         this.trainingStatus.next(TrainingState.Stopped);
         this.stopTimer();
         this._pausedDuration = 0;
+        this._finishedTimestamp = Date.now();
     }
 
     public pause() {
@@ -110,12 +113,14 @@ export abstract class TrainingInstance implements Training {
 
     public save(){
         if(this.trainingChartData){
-            const training: Training = {
+            const training: FinishedTraining = {
                 id: this.id,
                 title: this.title,
                 targetedTrainingTime: this.targetedTrainingTime,
                 targetPowerZones: this.targetPowerZones,
                 trainingChartData: this.trainingChartData,
+                finishedTimestamp: this._finishedTimestamp,
+                finsihedPowerMultiplier: this.instantenousPowerMultiplier // TODO - calculate average power target while training
             }
             if(this.cloudSynchronised){
                 // TODO: Save to cloud

@@ -22,6 +22,7 @@ const Training = () => {
   const [instantaneousPower, setInstantaneousPower] = useState<number | undefined>(0);
   const [instantaneousCadence, setInstantaneousCadence] = useState<number | undefined>(0);
   const [instantaneousSpeed, setInstantaneousSpeed] = useState<number | undefined>(0);
+  const [instantaneousPowerMultiplier, setInstantaneousPowerMultiplier] = useState(1);
 
   const [trainingStatus, setTrainingStatus] = useState<TrainingState>(TrainingState.Stopped);
   const [training, setTraining] = useState<WahooTrainingInstance | undefined>(undefined);
@@ -78,6 +79,17 @@ const Training = () => {
             <InformationCard icon={<Zap height={20} width={20} />} title="Instantaneous Power" value={instantaneousPower} desc="Instantaneous Power" unit={"W"} />
             <InformationCard icon={<RotateCwIcon height={20} width={20} />} title="Instantaneous Cadence" value={instantaneousCadence} desc="Instantaneous Cadence" unit={"per min"} />
             <InformationCard icon={<Gauge height={20} width={20} />} title="Instantaneous Speed" value={instantaneousSpeed} desc="Instantaneous Speed" unit={"km/h"} />
+            <div className="flex gap-2 items-center">
+              <Button onClick={() => {
+                training.instantenousPowerMultiplier = training.instantenousPowerMultiplier - 0.1;
+                setInstantaneousPowerMultiplier(training.instantenousPowerMultiplier);
+              }}>-</Button>
+              {instantaneousPowerMultiplier.toFixed(1)}
+              <Button onClick={() => {
+                training.instantenousPowerMultiplier = training.instantenousPowerMultiplier + 0.1;
+                setInstantaneousPowerMultiplier(training.instantenousPowerMultiplier);
+              }}>+</Button>
+            </div>
           </div>
           <div className='flex flex-row items-center justify-center gap-5 w-full flex-wrap'>
             <TrainingChart training={training} />
