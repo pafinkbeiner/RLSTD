@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import { ThemeProvider } from './components/theme-provider.tsx'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { BrowserRouter, createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ErrorPage from './ErrorPage.tsx';
 import BaseLayout from './BaseLayout.tsx';
 import Training from './Training.tsx';
@@ -30,10 +30,18 @@ const router = createBrowserRouter([
         element: <BaseLayout><History /></BaseLayout>,
         errorElement: <ErrorPage />
     },
-], {basename: "/RLSTD/"});
+], {
+    basename: "/RLSTD/", future: {
+        v7_relativeSplatPath: true,
+        v7_fetcherPersist: true,
+        v7_normalizeFormMethod: true,
+        v7_partialHydration: true,
+        v7_skipActionErrorRevalidation: true
+    }
+});
 
 createRoot(document.getElementById('root')!).render(
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <RouterProvider router={router} />
+        <RouterProvider future={{ v7_startTransition: true }} router={router} />
     </ThemeProvider>,
 )
