@@ -18,6 +18,8 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
+import { version } from "../../package.json"
+
 // This is sample data.
 const data = {
   user: {
@@ -59,6 +61,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarRail />
+      <div className="flex justify-center" style={{color: "#252525"}}>
+       <p>Version: v{version}</p>
+      </div>
     </Sidebar>
   )
 }
