@@ -43,8 +43,10 @@ export class WahooTrainingInstance extends TrainingInstance {
         // Register Target Power Change Handler
         this.registerHandler(async (trainingSnapshot: TrainingSnapshot) => {
             const targetPowerZone = this._targetPowerZones.find((v) => v.ts === trainingSnapshot.currentTrainingDifference);
+            console.log("Instantaneous Power Multiplier: ", this.instantenousPowerMultiplier);
             if(targetPowerZone){
                 const nextTargetPower = targetPowerZone.target * this.instantenousPowerMultiplier;
+                console.log("Next Target Power: ", targetPowerZone);
                 if(nextTargetPower !== this._currentTargetPower){
                     console.log("Target Power Difference detected! Setting Target Power to: ", nextTargetPower);
                     await this.setTargetPower(nextTargetPower);
