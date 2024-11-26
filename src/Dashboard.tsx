@@ -6,8 +6,6 @@ import { convert_0x2A63, convert_0x2AD2, convert_0x2AD6, convert_0x2AD8 } from '
 import { SpeedChart } from './SpeedChart'
 import InformationCard from './components/InformationCard'
 import FlagsBox from './components/FlagsBox'
-import { Card, CardTitle } from './components/ui/card'
-import { ScrollArea } from '@radix-ui/react-scroll-area'
 import { TrainingOverviewCard } from './components/TrainingOverviewCard'
 
 function Dashboard() {

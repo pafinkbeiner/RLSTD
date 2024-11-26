@@ -1,4 +1,5 @@
 import { BehaviorSubject, Subject } from "rxjs";
+import { test_navigator } from "./bluetooth_test";
 
 export const status: Subject<string> = new Subject();
 export const connected: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -34,16 +35,27 @@ export const disconnect = () => {
 
 export const connect = async () => {
   try {
-    device = await navigator.bluetooth.requestDevice({
-      filters: [
-        {
-          services: [
-            0x1818, // cycling_power
-            0x1826, // fitness_machine
-          ],
-        },
-      ],
-    });
+
+    // Added for Testing in Development Environment
+    if(process.env.NODE_ENV === "development"){
+      device = await test_navigator.bluetooth.requestDevice();
+    }else {
+      device = await navigator.bluetooth.requestDevice({
+        filters: [
+          {
+            services: [
+              0x1818, // cycling_power
+              0x1826, // fitness_machine
+            ],
+          },
+        ],
+      });
+    }
+
+    // Added for Testing in Development Environment
+    if(device === undefined){
+      return;
+    }
 
     status.next(`Status: Connecting to ${device.name}...`);
 
