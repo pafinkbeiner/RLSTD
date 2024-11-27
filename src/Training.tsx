@@ -4,7 +4,7 @@ import { connect, connected, disconnect, notify_0x2AD2, write_0x2AD9 } from "./l
 import { convert_0x2AD2, numToUint8Array, opCodes_0x2AD9 } from "./lib/convert"
 import ConnectivityIndicator from "./components/ConnectivityIndicator";
 import InformationCard from "./components/InformationCard";
-import { Gauge, RotateCwIcon, Zap } from "lucide-react";
+import { Gauge, RotateCwIcon, TriangleRight, Zap } from "lucide-react";
 import { TrainingChart } from "./components/TrainingChart";
 import { Training as TrainingType, TrainingState } from "./types/Training";
 import { AddTraining } from "./components/AddTraining/AddTraining";
@@ -29,7 +29,7 @@ const Training = () => {
 
   useEffect(() => {
     const training: TrainingType | undefined = location.state?.training;
-    if(training !== undefined) {
+    if (training !== undefined) {
       setTraining(new WahooTrainingInstance(training.title, training.targetedTrainingTime, training.targetPowerZones))
     }
   }, [location]);
@@ -52,14 +52,14 @@ const Training = () => {
   })
 
   useEffect(() => {
-    let subscription: Subscription  | undefined = undefined;
-    if(training){
+    let subscription: Subscription | undefined = undefined;
+    if (training) {
       subscription = training.trainingStatus.subscribe((v: TrainingState) => {
         setTrainingStatus(v);
       })
     }
     return () => {
-      if(subscription){
+      if (subscription) {
         subscription.unsubscribe();
       }
     }
@@ -71,7 +71,7 @@ const Training = () => {
       <ConnectivityIndicator onClick={isConnected ? () => disconnect() : async () => await connect()} className="position-absolute top-0 right-0" connected={isConnected} />
       <AddTraining />
       <div className="flex flex-row gap-3">
-        <SelectTraining setTraining={setTraining}/>
+        <SelectTraining setTraining={setTraining} />
       </div>
       {training &&
         <>
@@ -79,16 +79,23 @@ const Training = () => {
             <InformationCard icon={<Zap height={20} width={20} />} title="Instantaneous Power" value={instantaneousPower} desc="Instantaneous Power" unit={"W"} />
             <InformationCard icon={<RotateCwIcon height={20} width={20} />} title="Instantaneous Cadence" value={instantaneousCadence} desc="Instantaneous Cadence" unit={"per min"} />
             <InformationCard icon={<Gauge height={20} width={20} />} title="Instantaneous Speed" value={instantaneousSpeed} desc="Instantaneous Speed" unit={"km/h"} />
-            <div className="flex gap-2 items-center">
-              <Button onClick={() => {
-                training.instantenousPowerMultiplier = training.instantenousPowerMultiplier - 0.1;
-                setInstantaneousPowerMultiplier(training.instantenousPowerMultiplier);
-              }}>-</Button>
-              {instantaneousPowerMultiplier.toFixed(1)}
-              <Button onClick={() => {
-                training.instantenousPowerMultiplier = training.instantenousPowerMultiplier + 0.1;
-                setInstantaneousPowerMultiplier(training.instantenousPowerMultiplier);
-              }}>+</Button>
+
+            <div className="rounded-xl border bg-card text-card-foreground shadow min-w-64 flex items-center flex-col flex-1">
+              <div className="self-start p-6 flex flex-row items-center justify-between space-y-0 pb-5 w-full">
+                <h3 className="tracking-tight text-sm font-medium">Power Multiplier</h3>
+                <TriangleRight height={20} width={20} />
+              </div>
+              <div className="flex gap-2 items-center p-6 pt-0">
+                <Button onClick={() => {
+                  training.instantenousPowerMultiplier = training.instantenousPowerMultiplier - 0.1;
+                  setInstantaneousPowerMultiplier(training.instantenousPowerMultiplier);
+                }}>-</Button>
+                {instantaneousPowerMultiplier.toFixed(1)}
+                <Button onClick={() => {
+                  training.instantenousPowerMultiplier = training.instantenousPowerMultiplier + 0.1;
+                  setInstantaneousPowerMultiplier(training.instantenousPowerMultiplier);
+                }}>+</Button>
+              </div>
             </div>
           </div>
           <div className='flex flex-row items-center justify-center gap-5 w-full flex-wrap'>
@@ -98,9 +105,9 @@ const Training = () => {
             <Button disabled={(trainingStatus == TrainingState.Running) || (trainingStatus == TrainingState.Paused)} onClick={async () => await training.start()}>Start Training</Button>
             <Button disabled={(trainingStatus == TrainingState.Running) || (trainingStatus == TrainingState.Stopped)} onClick={async () => training.continue()}>Continue Training</Button>
             <Button disabled={(trainingStatus == TrainingState.Paused) || (trainingStatus == TrainingState.Stopped)} onClick={async () => training.pause()}>Pause Training</Button>
-            <Button disabled={(trainingStatus == TrainingState.Stopped)} onClick={async () => { 
-              training.stop(); 
-              training.save(); 
+            <Button disabled={(trainingStatus == TrainingState.Stopped)} onClick={async () => {
+              training.stop();
+              training.save();
               // setTraining(undefined); 
             }}>Stop Training</Button>
           </div>

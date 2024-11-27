@@ -47,4 +47,5 @@ export interface TrainingSnapshot {
     currentTrainingTimestamp: number;
     currentTrainingDifference: number;
     targetPowerZone: Metric | undefined;
+    lastPowerZone: Metric;
 }

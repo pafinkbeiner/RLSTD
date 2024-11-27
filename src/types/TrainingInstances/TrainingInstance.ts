@@ -13,6 +13,7 @@ export abstract class TrainingInstance implements Training {
     _targetPowerZones: Metric[];
     cloudSynchronised?: boolean;
     instantenousPowerMultiplier: number = 1;
+    _lastPowerZone: Metric = {ts: 0, target: 0};
 
     // Time related
     private _timerSubscription: any = undefined;
@@ -57,15 +58,20 @@ export abstract class TrainingInstance implements Training {
         this.handler.push(handler);
     }
 
+    // TODO - Fix the values that gets passed to the training handlers
     private tick(currentTime: number) {
         const currentTrainingTimestamp = currentTime - this._startTimeStamp - this._pausedDuration;  // Current timestamp in ms since start minus paused time
         const currentTrainingDifference = Math.round(currentTrainingTimestamp / 1000);  // Convert to seconds
         const targetPowerZone = this.targetPowerZones.find(v => v.ts <= currentTrainingDifference && v.ts + this._refreshInterval / 1000 >= currentTrainingDifference);  // Target zone match
+        if(targetPowerZone !== undefined){
+            this._lastPowerZone = targetPowerZone;
+        }
 
         const trainingSnapshot: TrainingSnapshot = {
             currentTrainingTimestamp,
             currentTrainingDifference,
-            targetPowerZone
+            targetPowerZone,
+            lastPowerZone: this._lastPowerZone
         };
 
         this.handler.forEach(h => h(trainingSnapshot));
