@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ModeToggle } from "./components/mode-toggle"
-import { FinishedTraining, Training } from "./types/Training";
+import { ExtMetric, FinishedTraining, Training } from "./types/Training";
 import { PassivTrainingChart } from "./components/AddTraining/PassivTrainingChart";
 import {
   Table,
@@ -44,6 +44,31 @@ const History = () => {
     refreshState();
   }, [])
 
+  const sortFunc = (a: FinishedTraining, b: FinishedTraining) => {
+    if (!a && b) return 1;
+    if (a && !b) return -1;
+    if (!a && !b) return 0;
+    if (a.finishedTimestamp && b.finishedTimestamp) {
+      return b.finishedTimestamp - a.finishedTimestamp;
+    }
+    if (a.finishedTimestamp && !b.finishedTimestamp) return -1;
+    if (!a.finishedTimestamp && b.finishedTimestamp) return 1;
+    return 0;
+  }
+
+
+  const calculateAverageWatt = (finishedTraining: FinishedTraining) => {
+    const chartData: ExtMetric[] | undefined = finishedTraining.trainingChartData;
+    if(chartData){
+      let sum = 0;
+      const instantDataPoints = chartData.filter(e => e.instant !== undefined);
+      instantDataPoints.forEach(e => sum += (e.instant ?? 0));
+      return (sum / instantDataPoints.length);
+    } else {
+      return -1;
+    }
+  }
+
   return (
     <div className="flex flex-col items-center justify-center w-full">
       <h1 className="pb-5">Finished Trainings</h1>
@@ -60,17 +85,19 @@ const History = () => {
             <TableHead>Description</TableHead>
             <TableHead>Targeted Training Time (s)</TableHead>
             <TableHead>Currently Displayed</TableHead>
+            <TableHead>Average Watt Amount</TableHead>
             <TableHead>Finsihed at</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {trainings.map((training: FinishedTraining) => {
+          {trainings.sort(sortFunc).map((training: FinishedTraining) => {
             return (
               <TableRow key={training.id} className="cursor-pointer" onClick={() => setSelectedTraining(training)}>
                 <TableCell>{training.title}</TableCell>
                 <TableCell>{training.description ?? "-"}</TableCell>
                 <TableCell>{training.targetedTrainingTime}</TableCell>
                 <TableCell>{training.id == selectedTraining?.id && "Yes"}</TableCell>
+                <TableCell>{calculateAverageWatt(training).toFixed(2)}</TableCell>
                 <TableCell>{training.finishedTimestamp ? new Date(training.finishedTimestamp).toISOString(): "-"}</TableCell>
               </TableRow>
             )
