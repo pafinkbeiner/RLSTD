@@ -1,11 +1,11 @@
 {
   "name": "rlstd",
   "private": true,
-  "version": "0.9.3",
+  "version": "0.9.2",
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "build": "tsc -b && vite build",
+    "build": "npm version patch && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
