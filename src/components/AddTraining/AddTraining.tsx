@@ -13,12 +13,12 @@ import { useEffect, useState } from "react"
 import { InstantiatedTraining, Metric, Training } from "@/types/Training";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Slider } from "../ui/slider";
 import { TrainingChart } from "../TrainingChart";
 import { WahooTrainingInstance } from "@/types/TrainingInstances/WahooTrainingInstance";
 import { ScrollArea } from "../ui/scroll-area";
 import TargetPowerControl from "./TargetPowerControl";
 import AddTrainingAreaChart from "./AddTrainingAreaChart";
+import { v4 as uuidv4 } from 'uuid';
 
 export function AddTraining() {
 
@@ -70,7 +70,7 @@ export function AddTraining() {
   const saveTraining = () => {
     // store training to local storage
     const training: Training = {
-      id: crypto.randomUUID(),
+      id: uuidv4(),
       title: trainingTitle,
       targetedTrainingTime: chartData[chartData.length - 1].ts + 1,
       targetPowerZones: chartData,

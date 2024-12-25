@@ -1,0 +1,34 @@
+[
+    {
+        "id": "dab63ecc-4a22-4904-85ab-5bc5d80ecd1c",
+        "title": "Test Training",
+        "targetedTrainingTime": 601,
+        "targetPowerZones": [
+            {
+                "ts": 0,
+                "target": 100
+            },
+            {
+                "ts": 3,
+                "target": 100
+            },
+            {
+                "ts": 120,
+                "target": 400
+            },
+            {
+                "ts": 240,
+                "target": 300
+            },
+            {
+                "ts": 360,
+                "target": 200
+            },
+            {
+                "ts": 600,
+                "target": 200
+            }
+        ],
+        "cloudSynchronised": false
+    }
+]

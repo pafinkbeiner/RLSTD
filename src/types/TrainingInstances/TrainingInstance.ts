@@ -1,5 +1,6 @@
 import { BehaviorSubject, interval, takeWhile } from "rxjs";
 import { ExtMetric, FinishedTraining, Metric, Training, TrainingSnapshot, TrainingState } from "../Training";
+import { v4 as uuidv4 } from 'uuid';
 
 export abstract class TrainingInstance implements Training {
     readonly id: string;
@@ -26,7 +27,7 @@ export abstract class TrainingInstance implements Training {
     public trainingStatus: BehaviorSubject<TrainingState> = new BehaviorSubject<TrainingState>(TrainingState.Stopped);
 
     constructor(title: string, targetedTrainingTime: number, targetPowerZones: Metric[] = []) {
-        this.id = crypto.randomUUID();
+        this.id = uuidv4();
         this.title = title;
         this.targetedTrainingTime = targetedTrainingTime;
         this._targetPowerZones = targetPowerZones;
