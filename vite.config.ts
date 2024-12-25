@@ -10,7 +10,7 @@ export default defineConfig({
       targets: [
         {
           src: 'default.json',
-          dest: 'docs'
+          dest: './'
         }
       ]
     })
