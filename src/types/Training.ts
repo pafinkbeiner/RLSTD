@@ -22,7 +22,7 @@ export interface Training {
     targetedTrainingTime: number;
     targetPowerZones: Metric[];
     cloudSynchronised?: boolean;
-    trainingChartData?: any; // TODO - delete
+    trainingChartData?: ExtMetric[]; // TODO REMOVE
     // Essentials
     start?: () => void;
     stop?: () => void;

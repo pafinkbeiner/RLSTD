@@ -7,35 +7,18 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import { ReporitoryManager, Repository } from "@/lib/RepositoryManager";
 import { useEffect, useState } from "react"
-
-interface Repository {
-    name: string;
-    url: string;
-}
-
-function storeRepositories(repositories: Repository[]) {
-    localStorage.setItem("repositories", JSON.stringify(repositories));
-}
-
-function loadRepositories(): Repository[] {
-    const repositories = localStorage.getItem("repositories");
-    if (repositories) {
-        return JSON.parse(repositories);
-    } else {
-        return [];
-    }
-}
 
 export function TrainingRepositories() {
 
-    const [repositories, setRepositories] = useState<Repository[]>([]);
+    const repositoryManager: ReporitoryManager = new ReporitoryManager();
+
+    const [repositories, setRepositories] = useState<Repository[]>();
 
     useEffect(() => {
-        setRepositories(loadRepositories());
-        return () => {
-            storeRepositories(repositories);
-        };
+        const repos = repositoryManager.get();
+        setRepositories(repos);
     }, [])
 
     return (
@@ -48,7 +31,7 @@ export function TrainingRepositories() {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {repositories.map((repository) => (
+                {repositories && repositories.map((repository) => (
                     <TableRow key={repository.name}>
                         <TableCell>{repository.name}</TableCell>
                         <TableCell>{repository.url}</TableCell>

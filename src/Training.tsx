@@ -12,6 +12,7 @@ import { SelectTraining } from "./components/SelectTraining";
 import { BehaviorSubject, Subscription } from "rxjs";
 import { WahooTrainingInstance } from "./types/TrainingInstances/WahooTrainingInstance";
 import { useLocation } from "react-router-dom";
+import { SelectRepoTraining } from "./components/SelectRepoTraining";
 
 const Training = () => {
 
@@ -73,6 +74,9 @@ const Training = () => {
       <div className="flex flex-row gap-3">
         <SelectTraining setTraining={setTraining} />
       </div>
+      { !training && 
+        <SelectRepoTraining setTraining={setTraining}/>
+      }
       {training &&
         <>
           <div className='flex flex-row items-center justify-center gap-5 w-full flex-wrap'>
