@@ -60,12 +60,14 @@ export class ReporitoryManager {
     }
 
     getTrainings(): Promise<Training[]>{
-        return new Promise<Training[]>((resolve, _) => {
+        return new Promise<Training[]>(async (resolve, _) => {
             const trainings: Training[] = [];
-            this.get().forEach(async (repository) => {
+            const promises = this.get().map(async (repository) => {
                 const result = await axios.get(repository.url);
-                trainings.push(...result.data);
+                return result.data;
             });
+            const results = await Promise.all(promises);
+            results.forEach(result => trainings.push(...result));
             resolve(trainings);
         });
     }
