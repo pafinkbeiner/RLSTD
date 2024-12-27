@@ -62,7 +62,7 @@ export class ReporitoryManager {
     getTrainings(): Promise<Training[]>{
         return new Promise<Training[]>(async (resolve, _) => {
             const trainings: Training[] = [];
-            const promises = this.get().map(async (repository) => {
+            const promises: Promise<any>[] = this.get().map(async (repository) => {
                 const result = await axios.get(repository.url);
                 return result.data;
             });

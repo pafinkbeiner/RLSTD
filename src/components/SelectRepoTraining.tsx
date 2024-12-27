@@ -43,20 +43,26 @@ export function SelectRepoTraining(props: Props) {
   }
 
   return (
-    <>
+    <div className="border rounded-lg p-5">
+      <div>
+        Repository Trainings
+      </div>
+
       <div className='flex flex-row items-center justify-center gap-5 w-full flex-wrap p-5'>
         {trainings.length > 0 && trainings.map((training: Training) => {
           return (
             <div key={training.id} onClick={() => setSelectedTraining(training)}>
-              <InformationCard icon={<Trash height={20} width={20} />} title={`${training.title} ${training.title === selectedTraining?.title ? " (selected)" : ""}`} value={training.targetPowerZones.length} desc={training.description ?? ""} unit={"target power zones"} />
+              <InformationCard title={`${training.title} ${training.title === selectedTraining?.title ? " (selected)" : ""}`} value={training.targetPowerZones.length} desc={training.description ?? ""} unit={"target power zones"} />
             </div>
           );
         })}
         {trainings.length <= 0 && <h3>No Trainings found</h3>}
       </div>
 
-      <Button onClick={refreshState}>Refresh Cloud Trainings</Button>
-      <Button type="submit" onClick={loadTraining}>Load Selected Training</Button>
-    </>
+      <div className="flex gap-2">
+        <Button variant={"outline"} onClick={refreshState}>Refresh Cloud Trainings</Button>
+        <Button type="submit" onClick={loadTraining}>Load Selected Training</Button>
+      </div>
+    </div>
   )
 }

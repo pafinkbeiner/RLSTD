@@ -68,15 +68,22 @@ const Training = () => {
 
   return (
     <>
-      <p>Training</p>
       <ConnectivityIndicator onClick={isConnected ? () => disconnect() : async () => await connect()} className="position-absolute top-0 right-0" connected={isConnected} />
-      <AddTraining />
-      <div className="flex flex-row gap-3">
-        <SelectTraining setTraining={setTraining} />
+        
+      <div className="flex flex-col gap-3 border rounded-lg p-5">
+        Eigene Trainings
+        <div className="flex gap-3">
+          <AddTraining />
+          <div className="flex flex-row gap-3">
+            <SelectTraining setTraining={setTraining} />
+          </div>
+        </div>
       </div>
-      { !training && 
-        <SelectRepoTraining setTraining={setTraining}/>
+
+      {!training &&
+        <SelectRepoTraining setTraining={setTraining} />
       }
+
       {training &&
         <>
           <div className='flex flex-row items-center justify-center gap-5 w-full flex-wrap'>
