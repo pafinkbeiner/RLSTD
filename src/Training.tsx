@@ -69,9 +69,9 @@ const Training = () => {
   return (
     <>
       <ConnectivityIndicator onClick={isConnected ? () => disconnect() : async () => await connect()} className="position-absolute top-0 right-0" connected={isConnected} />
-        
+
       <div className="flex flex-col gap-3 border rounded-lg p-5">
-        Eigene Trainings
+        Custom Trainings
         <div className="flex gap-3">
           <AddTraining />
           <div className="flex flex-row gap-3">
