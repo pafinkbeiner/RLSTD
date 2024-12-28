@@ -49,14 +49,14 @@ export function SelectRepoTraining(props: Props) {
       </div>
 
       <div className='flex flex-row items-center justify-center gap-5 w-full flex-wrap p-5'>
-        {trainings.length > 0 && trainings.map((training: Training) => {
+        {trainings && trainings.length > 0 && trainings.map((training: Training) => {
           return (
             <div key={training.id} onClick={() => setSelectedTraining(training)}>
-              <InformationCard title={`${training.title} ${training.title === selectedTraining?.title ? " (selected)" : ""}`} value={training.targetPowerZones.length} desc={training.description ?? ""} unit={"target power zones"} />
+              <InformationCard title={`${training.title} ${training.title === selectedTraining?.title ? " (selected)" : ""}`} value={training?.targetPowerZones?.length} desc={training.description ?? ""} unit={"target power zones"} />
             </div>
           );
         })}
-        {trainings.length <= 0 && <h3>No Trainings found</h3>}
+        {trainings && trainings.length <= 0 && <h3>No Trainings found</h3>}
       </div>
 
       <div className="flex gap-2">
