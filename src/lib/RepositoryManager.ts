@@ -44,6 +44,11 @@ export class ReporitoryManager {
         return results.every(result => result === true);
     }
 
+    remove(name: string){
+        this.repositories = this.repositories.filter(repo => repo.name !== name);
+        this.persist();
+    }
+
     add(repository: Repository) {
         this.repositories = this.repositories.filter(repo => repo.name !== repository.name);
         this.repositories.push(repository);

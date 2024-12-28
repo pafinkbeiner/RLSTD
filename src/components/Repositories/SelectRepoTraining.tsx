@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/sheet"
 import { useEffect, useState } from "react"
 import { Metric, Training } from "@/types/Training";
-import InformationCard from "./InformationCard";
+import InformationCard from "../InformationCard";
 import { Trash, Trash2, Zap } from "lucide-react";
 import { WahooTrainingInstance } from "@/types/TrainingInstances/WahooTrainingInstance";
 import { ReporitoryManager } from "@/lib/RepositoryManager";

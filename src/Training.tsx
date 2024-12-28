@@ -12,7 +12,7 @@ import { SelectTraining } from "./components/SelectTraining";
 import { BehaviorSubject, Subscription } from "rxjs";
 import { WahooTrainingInstance } from "./types/TrainingInstances/WahooTrainingInstance";
 import { useLocation } from "react-router-dom";
-import { SelectRepoTraining } from "./components/SelectRepoTraining";
+import { SelectRepoTraining } from "./components/Repositories/SelectRepoTraining";
 
 const Training = () => {
 
