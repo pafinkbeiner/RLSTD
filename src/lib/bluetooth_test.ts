@@ -1,7 +1,9 @@
 function generateRandomBuffer() {
-  const randomArray = new Uint8Array(16);
+  let randomArray = new Uint8Array(16);
   window.crypto.getRandomValues(randomArray);
-  return randomArray; 
+  randomArray[7] = 0;
+  randomArray[8] = 50 + (0.5) * randomArray[6];
+  return randomArray;
 }
 
 export const test_navigator = {
